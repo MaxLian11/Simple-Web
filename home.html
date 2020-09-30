@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="main">
+<head>
+	<meta charset="UTF-8">
+    <title>COMP440 - Phase 1 - Group #8</title>
+	<base href="/"></base>
+	<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div id="buttons">
+        <button id="SignIn">Sign In</button>
+        <button id="Register">Register</button>
+
+        <script type="text/javascript">
+            document.getElementById("SignIn").onclick = function () {
+                location.href = "login.php";
+            };
+            document.getElementById("Register").onclick = function () {
+                location.href = "register.php";
+            };
+        </script>
+    </div>
+</body>
+</html>

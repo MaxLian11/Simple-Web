@@ -1,0 +1,45 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	outline: 0;
+}
+
+div#buttons button {
+    font-size: 30px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: rgb(154, 176, 236);
+    border: 0;
+    cursor: pointer;
+    box-shadow: 4px 4px 4px #2a3679;
+    margin: 10px;
+}
+
+div#buttons {
+    margin: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.login_form {
+    margin: 20px auto;
+    width: 20%;
+    border: 3px solid #2a6fca;
+    padding: 10px;
+}
+
+.reg_form {
+
+    margin: 20px auto;
+    width: 20%;
+    border: 3px solid #2a6fca;
+    padding: 10px;
+}
+
+.form-input {
+    padding: 5px;
+}
