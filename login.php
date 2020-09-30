@@ -39,18 +39,11 @@ if(isset($_POST['username'])){
 	<link rel="stylesheet" href="./style.css">
 </head>
 <body>
-	<div class="login_form">
-		<form method="POST" action="#">
-			<div class="form-input">
-				<input type="text" name="username" placeholder="Username"/>	
-			</div>
-			<div class="form-input">
-				<input type="password" name="password" placeholder="Password"/>
-			</div>
-			<div class="form-input">
-				<input class="form-input" type="submit" type="submit" value="Log In" class="btn-login"/>
-			</div>
-		</form>
-	</div>
+	<form class="box" method="POST" action="#">
+		<h1>Login</h1>
+		<input type="text" name="username" placeholder="Username"/>	
+		<input type="password" name="password" placeholder="Password"/>
+		<input class="form-input" type="submit" type="submit" value="Log In" class="btn-login"/>
+	</form>
 </body>
 </html>

@@ -83,22 +83,12 @@ if (isset($_POST['register_user'])) {
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <form class="reg_form" method="post" action="register.php">
-  	<div class="form-input">
-        <input type="text" name="username" placeholder="Username"/>
-  	</div>
-  	<div class="form-input">
+  <form class="box" method="post" action="register.php">
+        <input type="text" name="username" placeholder="Usename"/>
         <input type="email" name="email" placeholder="Email"/>
-  	</div>
-  	<div class="form-input">
         <input type="password" name="password_1" placeholder="Password"/>
-  	</div>
-  	<div class="form-input">
         <input type="password" name="password_2" placeholder="Repeat Password"/>
-  	</div>
-  	<div class="form-input">
-  	  <button class="form-input" type="submit" class="btn" name="register_user">Register</button>
-  	</div>
+  	    <input class="submit" type="submit" class="btn" name="register_user"></button>
   </form>
 </body>
 </html>
