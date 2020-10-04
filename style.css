@@ -2,42 +2,40 @@ body{
 	margin: 0;
 	padding: 0;
 	font-family: sans-serif;
-    background: #34495e;
+    /*background: #34495e;*/
+    background: url(pic5.jpg);
+    background-size: cover;
+    background-position: fixed;
 }
 
-div#buttons button {
-    font-size: 30px;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background: rgb(154, 176, 236);
-    border: 0;
-    cursor: pointer;
-    box-shadow: 4px 4px 4px #2a3679;
-    margin: 10px;
+.register{
+    color: white;
+    text-align: right;
+    padding: 20px;
+    text-decoration: none;
+    font-size: 12px;
 }
-
-div#buttons {
-    margin: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 
 .box {
-    width: 300px;
-    padding: 40px;
+    /*width: 300px;*/
+    width: 320px;
+    height:380px;
+    /*padding: 40px;*/
+    padding: 70px 30px;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background:  #191919;
+    box-sizing: border-box;
+    /*background:  #191919;*/
+    background-color: #000000b3;
+    color:#fff;
     text-align: center;
+    border-radius: 10px;
 }
 .box h1{
     color: white;
-    text-transform: uppercase;
+    /*text-transform: uppercase;*/
     font-weight: 500;
 }
 

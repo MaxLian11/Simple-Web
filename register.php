@@ -84,11 +84,17 @@ if (isset($_POST['register_user'])) {
 </head>
 <body>
   <form class="box" method="post" action="register.php">
+        <h1>Sign Up</h1>      
         <input type="text" name="username" placeholder="Usename"/>
         <input type="email" name="email" placeholder="Email"/>
         <input type="password" name="password_1" placeholder="Password"/>
         <input type="password" name="password_2" placeholder="Repeat Password"/>
-  	    <input class="submit" type="submit" class="btn" name="register_user"></button>
+        <input class="submit" type="submit" class="btn" name="register_user" value="Submit"></button>
+        <div class = "register">
+           <?php 
+               echo "<a class='register' href='login.php'>Sign in instead</a>"; 
+           ?> 
+    </div>
   </form>
 </body>
 </html>
