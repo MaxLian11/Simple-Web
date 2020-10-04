@@ -3,9 +3,9 @@ body{
 	padding: 0;
 	font-family: sans-serif;
     /*background: #34495e;*/
-    background: url(pic5.jpg);
+    background: url(pic6.jpg);
     background-size: cover;
-    background-position: fixed;
+    background-position: 50% 50%;
 }
 
 .register{
@@ -19,7 +19,7 @@ body{
 .box {
     /*width: 300px;*/
     width: 320px;
-    height:380px;
+    height:465px;
     /*padding: 40px;*/
     padding: 70px 30px;
     position: absolute;
@@ -89,4 +89,22 @@ body{
 
 .box {
     padding: 5px;
+}
+
+.container{
+    /*width: 300px;*/
+    width: 320px;
+    height:300px;
+    /*padding: 40px;*/
+    padding: 70px 30px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;
+    /*background:  #191919;*/
+    background-color: #000000b3;
+    color:#fff;
+    text-align: center;
+    border-radius: 10px;
 }
