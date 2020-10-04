@@ -23,7 +23,7 @@ if(isset($_POST['username'])){
     $result = mysqli_query($db, $sql_query);
 
     if (mysqli_num_rows($result) == 1){
-        echo "Welcome {$username}!";
+        header("Location:./welcome.html");
         exit();
     } else {
         echo "The credentials you entered are incorrect.";
