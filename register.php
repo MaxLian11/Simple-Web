@@ -1,19 +1,5 @@
 <?php
 
-/*
-
-The DB ('registratino') was created using this SQL query:
-
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `username` varchar(100) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `password` varchar(100) NOT NULL
-)
-
-*/
-
-//session_start();
 $errors = array();
 $db = mysqli_connect('localhost', 'root', '', 'registration');
 
