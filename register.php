@@ -1,7 +1,5 @@
 <?php
 
-
-
 /*
 
 The DB ('registratino') was created using this SQL query:
@@ -60,18 +58,13 @@ if (isset($_POST['register_user'])) {
     // If no errors -> register
   if (count($errors) == 0) {
 
-    // Optional: Password encryption
-  	// $password_1 = md5($password_1);
-
-  	$query = "INSERT INTO users (username, email, password) VALUES('$username', '$email', '$password_1')";
+    // md5 encryption function
+    $query = "INSERT INTO users (username, email, password) VALUES('$username', ',".$email."', '".md5($password_1)."')";
+    
   	mysqli_query($db, $query);
-  	//$_SESSION['username'] = $username;
-    //$_SESSION['success'] = "You are now logged in";
 
-    // After successful registration
+    // Login after successful registration
     header('location: login.php');
-    //echo "Welcome {$username}!";
-    //    exit();
   }
 }
 ?>
@@ -92,7 +85,7 @@ if (isset($_POST['register_user'])) {
         <input class="submit" type="submit" class="btn" name="register_user" value="Submit"></button>
         <div class = "register">
            <?php 
-               echo "<a class='register' href='login.php'>Sign in instead</a>"; 
+               echo "<a class='register' href='login.php'>Sign In</a>"; 
            ?> 
     </div>
   </form>

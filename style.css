@@ -3,9 +3,9 @@ body{
 	padding: 0;
 	font-family: sans-serif;
     /*background: #34495e;*/
-    background: url(pic6.jpg);
+    background: url(pic5.jpg);
     background-size: cover;
-    background-position: 50% 50%;
+    background-position: fixed;
 }
 
 .register{
@@ -41,7 +41,7 @@ body{
 
 .box input[type = "text"],.box input[type = "password"],.box input[type = "email"]{
     border: 0;
-    background: none;
+    background: black;
     display: block;
     margin:  20px auto;
     text-align: center;
@@ -53,6 +53,11 @@ body{
     border-radius: 24px;
     transition: 0.25s;
 }
+::placeholder {
+    color: white;
+    opacity: 1;
+  }
+  
 
 .box input[type = "text"]:focus,.box input[type = "password"]:focus,.box input[type = "email"]:focus{
     width: 280px;
@@ -78,6 +83,9 @@ body{
 .box input[type = "submit"]:hover{
     background: #2eec71;
 }
+
+
+
 
 .reg_form {
 
@@ -107,4 +115,79 @@ body{
     color:#fff;
     text-align: center;
     border-radius: 10px;
+}
+
+.login_name{
+    color: rgb(81, 204, 77);
+}
+
+/*sign in box=============================*/
+.box2 {
+    /*width: 300px;*/
+    width: 320px;
+    height:380px;
+    /*padding: 40px;*/
+    padding: 70px 30px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;
+    /*background:  #191919;*/
+    background-color: #000000b3;
+    color:#fff;
+    text-align: center;
+    border-radius: 10px;
+}
+.box2 {
+    padding: 5px;
+}
+.box2 h1{
+    color: white;
+    /*text-transform: uppercase;*/
+    font-weight: 500;
+}
+
+.box2 input[type = "text"],.box2 input[type = "password"],.box2 input[type = "email"]{
+    border: 0;
+    background: black;
+    display: block;
+    margin:  20px auto;
+    text-align: center;
+    border: 2px solid #3498db;
+    padding: 14px 10px;
+    width: 200px;
+    outline: none;
+    color: white;
+    border-radius: 24px;
+    transition: 0.25s;
+}
+::placeholder {
+    color: rgba(165, 164, 164, 0.87);
+    opacity: 1;
+  }
+
+.box2 input[type = "text"]:focus,.box2 input[type = "password"]:focus,.box2 input[type = "email"]:focus{
+    width: 280px;
+    border-color: #2ecc71;
+}
+
+.box2 input[type = "submit"]{
+    border: 0;
+    background: none;
+    display: block;
+    margin:  20px auto;
+    text-align: center;
+    border: 2px solid #2ecc71;
+    padding: 14px 40px;
+    width: 200px;
+    outline: none;
+    color: white;
+    border-radius: 24px;
+    transition: 0.25s;
+    cursor: pointer;
+}
+
+.box2 input[type = "submit"]:hover{
+    background: #2eec71;
 }

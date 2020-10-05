@@ -14,16 +14,20 @@ mysqli_select_db($db, 'registration');
 
 if(isset($_POST['username'])){
 
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-    $sql_query = "	SELECT *
-					FROM users
-					WHERE username = '".$username."' AND password = '".$password."'";
+     // SQL injection prevention script
+    $username = mysqli_real_escape_string($db, $_POST["username"]);
+    $password = mysqli_real_escape_string($db, $_POST["password"]);
+     // md5 decryption function
+    $sql_query = "SELECT * FROM users WHERE username = '".$username."' AND password = '".md5($password)."'";
 
     $result = mysqli_query($db, $sql_query);
-
+      
+      // Limit to 1 result, otherwise - incorrect
     if (mysqli_num_rows($result) == 1){
-        header("Location:./welcome.html");
+
+        session_start();
+        $_SESSION["username"] = $username;
+        header("Location:./welcome.php");
         exit();
     } else {
         echo "The credentials you entered are incorrect.";
@@ -39,7 +43,7 @@ if(isset($_POST['username'])){
 	<link rel="stylesheet" href="./style.css">
 </head>
 <body>
-	<form class="box" method="POST" action="#">
+	<form class="box2" method="POST" action="#">
 		<h1>Sign In</h1>
 		<input type="text" name="username" placeholder="Username"/>
 		<input type="password" name="password" placeholder="Password"/>
