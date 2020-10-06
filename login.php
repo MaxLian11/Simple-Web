@@ -14,25 +14,34 @@ mysqli_select_db($db, 'registration');
 
 if(isset($_POST['username'])){
 
-     // SQL injection prevention script
+    // SQL injection prevention script
     $username = mysqli_real_escape_string($db, $_POST["username"]);
     $password = mysqli_real_escape_string($db, $_POST["password"]);
-     // md5 decryption function
-    $sql_query = "SELECT * FROM users WHERE username = '".$username."' AND password = '".md5($password)."'";
+    // md5 decryption function
+    $sql_query = "SELECT * FROM users WHERE username = '$username' AND password = 'md5($password)'";
 
+    /* Unsafe SQL code
+
+    //$username = $_POST["username"];
+    //$password = $_POST["password"];
+    //$sql_query = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
+    // Injection example:  123' OR username = 'max' AND '1'='1
+
+    */
+    
     $result = mysqli_query($db, $sql_query);
       
       // Limit to 1 result, otherwise - incorrect
-    if (mysqli_num_rows($result) == 1){
+      if (mysqli_num_rows($result) == 1) {
 
         session_start();
         $_SESSION["username"] = $username;
         header("Location:./welcome.php");
         exit();
-    } else {
-        echo "The credentials you entered are incorrect.";
-        exit();
-	}
+        } else {
+        echo "<a class='fail' >The credentials you entered are incorrect.</a>";
+        }
+    
 }
 ?>
 
@@ -51,6 +60,7 @@ if(isset($_POST['username'])){
     <div class = "register">
        <?php
            echo   "<a class='register' href='register.php'>Sign Up</a>";
+
        ?>
     </div>
 	</form>

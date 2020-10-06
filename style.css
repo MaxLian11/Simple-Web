@@ -16,6 +16,24 @@ body{
     font-size: 12px;
 }
 
+.login{
+    color: white;
+    background-color: #0000008a;
+    text-align: center;
+    padding: 20px 20px;
+    text-decoration: none;
+    font-size: 20px;
+}
+
+.fail {
+    color: white;
+    background-color: #0000008a;
+    position: absolute;
+    left: 37%;
+    top: 20%;
+    font-size: 20px;
+}
+
 .box {
     /*width: 300px;*/
     width: 320px;

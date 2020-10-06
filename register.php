@@ -45,7 +45,7 @@ if (isset($_POST['register_user'])) {
   if (count($errors) == 0) {
 
     // md5 encryption function
-    $query = "INSERT INTO users (username, email, password) VALUES('$username', ',".$email."', '".md5($password_1)."')";
+    $query = "INSERT INTO users (username, email, password) VALUES('$username', '".$email."', '".md5($password_1)."')";
     
   	mysqli_query($db, $query);
 
