@@ -16,10 +16,28 @@ body{
     font-size: 12px;
 }
 
+.login{
+    color: white;
+    background-color: #0000008a;
+    text-align: center;
+    padding: 20px 20px;
+    text-decoration: none;
+    font-size: 20px;
+}
+
+.fail {
+    color: white;
+    background-color: #0000008a;
+    position: absolute;
+    left: 37%;
+    top: 20%;
+    font-size: 20px;
+}
+
 .box {
     /*width: 300px;*/
     width: 320px;
-    height:380px;
+    height:465px;
     /*padding: 40px;*/
     padding: 70px 30px;
     position: absolute;
@@ -41,7 +59,7 @@ body{
 
 .box input[type = "text"],.box input[type = "password"],.box input[type = "email"]{
     border: 0;
-    background: none;
+    background: black;
     display: block;
     margin:  20px auto;
     text-align: center;
@@ -53,6 +71,11 @@ body{
     border-radius: 24px;
     transition: 0.25s;
 }
+::placeholder {
+    color: white;
+    opacity: 1;
+  }
+  
 
 .box input[type = "text"]:focus,.box input[type = "password"]:focus,.box input[type = "email"]:focus{
     width: 280px;
@@ -79,6 +102,9 @@ body{
     background: #2eec71;
 }
 
+
+
+
 .reg_form {
 
     margin: 20px auto;
@@ -89,9 +115,6 @@ body{
 
 .box {
     padding: 5px;
-<<<<<<< Updated upstream
-}
-=======
 }
 
 .container{
@@ -188,4 +211,3 @@ body{
 }
 
 
->>>>>>> Stashed changes

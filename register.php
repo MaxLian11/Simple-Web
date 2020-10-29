@@ -1,21 +1,5 @@
 <?php
 
-
-
-/*
-
-The DB ('registratino') was created using this SQL query:
-
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `username` varchar(100) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `password` varchar(100) NOT NULL
-)
-
-*/
-
-//session_start();
 $errors = array();
 $db = mysqli_connect('localhost', 'root', '', 'registration');
 
@@ -60,18 +44,13 @@ if (isset($_POST['register_user'])) {
     // If no errors -> register
   if (count($errors) == 0) {
 
-    // Optional: Password encryption
-  	// $password_1 = md5($password_1);
-
-  	$query = "INSERT INTO users (username, email, password) VALUES('$username', '$email', '$password_1')";
+    // md5 encryption function
+    $query = "INSERT INTO users (username, email, password) VALUES('$username', '$email', '$password_1')";
+    
   	mysqli_query($db, $query);
-  	//$_SESSION['username'] = $username;
-    //$_SESSION['success'] = "You are now logged in";
 
-    // After successful registration
+    // Login after successful registration
     header('location: login.php');
-    //echo "Welcome {$username}!";
-    //    exit();
   }
 }
 ?>
@@ -92,7 +71,7 @@ if (isset($_POST['register_user'])) {
         <input class="submit" type="submit" class="btn" name="register_user" value="Submit"></button>
         <div class = "register">
            <?php 
-               echo "<a class='register' href='login.php'>Sign in instead</a>"; 
+               echo "<a class='register' href='login.php'>Sign In</a>"; 
            ?> 
     </div>
   </form>
