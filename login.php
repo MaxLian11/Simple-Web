@@ -18,7 +18,7 @@ if(isset($_POST['username'])){
     $username = mysqli_real_escape_string($db, $_POST["username"]);
     $password = mysqli_real_escape_string($db, $_POST["password"]);
     // md5 decryption function
-    $sql_query = "SELECT * FROM users WHERE username = '$username' AND password = 'md5($password)'";
+    $sql_query = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
 
     /* Unsafe SQL code
 
