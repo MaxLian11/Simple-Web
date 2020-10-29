@@ -1,5 +1,4 @@
 <?php
-
 // Index.html is in a loop to test credentials
 // include("index.html");
 
@@ -47,6 +46,10 @@ if(isset($_POST['username'])){
     <div class = "register">
        <?php
            echo   "<a class='register' href='register.php'>Sign Up</a>";
+<<<<<<< Updated upstream
+=======
+    
+>>>>>>> Stashed changes
        ?>
     </div>
 	</form>
