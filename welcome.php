@@ -41,7 +41,7 @@
           
         $query = $query . $line;
         if ($endWith == ';') {
-        //  mysqli_query($conn,$query) or die('<div class="login_name">Problem in executing the SQL query <b>' . $query. '</b></div>');
+          //mysqli_query($conn,$query) or die('<div class="login_name">Problem in executing the SQL query <b>' . $query. '</b></div>');
           mysqli_query($conn,$query) or die('<div class="login_name"> Database was already created</div>');
           $query= '';		
         }
