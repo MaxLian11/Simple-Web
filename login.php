@@ -2,7 +2,7 @@
 // Index.html is in a loop to test credentials
 // include("index.html");
 
-$db = mysqli_connect('localhost', 'root', '', 'registration');
+$db = mysqli_connect('localhost', 'john', 'pass1234', 'registration');
 
 if ($db -> connect_errno) {
   echo "Failed to connect to MySQL: " . $db -> connect_error;

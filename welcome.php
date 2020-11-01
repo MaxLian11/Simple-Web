@@ -26,8 +26,8 @@
      <input type="submit" name="test" id="test" value="Initialize Database" />
      <?php
 
-    function insert(){
-      $conn =new mysqli('localhost', 'root', '' , 'registration');
+    function insert($flag){
+      $conn =new mysqli('localhost', 'john', 'pass1234', 'registration');
 
       $query = '';
       $sqlScript = file('DDL.sql');
@@ -42,18 +42,25 @@
 
         $query = $query . $line;
         if ($endWith == ';') {
-          //mysqli_query($conn,$query) or die('<div class="login_name">Problem in executing the SQL query <b>' . $query. '</b></div>');
-          mysqli_query($conn,$query) or die('<div class="login_name"> Database was already created</div>');
+          mysqli_query($conn,$query) or die('<div class="login_name">Problem in executing the SQL query <b>' . $query. '</b></div>');
+          //mysqli_query($conn,$query);
           $query= '';
         }
 
       }
-      echo '<div>Database was initialized</div>';
+      if ($flag == 1) {
+        echo '<div>Database was recreated</div>';
+      } else {
+        echo '<div>Database was initialized</div>';
+      }
     }
 
     if(array_key_exists('test',$_POST)){
-      insert();
-
+      $conn = new mysqli('localhost', 'john', 'pass1234', 'registration');
+      $check = mysqli_query($conn," SELECT * FROM student ") ;
+      $flag = 0;
+      if ($check !== False) { $flag = 1; }
+      insert($flag);
    }
 ?>
   </form>
