@@ -75,7 +75,7 @@ body{
     color: white;
     opacity: 1;
   }
-  
+
 
 .box input[type = "text"]:focus,.box input[type = "password"]:focus,.box input[type = "email"]:focus{
     width: 280px;

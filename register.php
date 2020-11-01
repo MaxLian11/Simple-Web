@@ -45,8 +45,8 @@ if (isset($_POST['register_user'])) {
   if (count($errors) == 0) {
 
     // md5 encryption function
-    $query = "INSERT INTO users (username, email, password) VALUES('$username', '$email', '$password_1')";
-    
+    $query = "INSERT INTO users (username, email, password) VALUES('$username', '".$email."', '".md5($password_1)."')";
+
   	mysqli_query($db, $query);
 
     // Login after successful registration
@@ -63,16 +63,16 @@ if (isset($_POST['register_user'])) {
 </head>
 <body>
   <form class="box" method="post" action="register.php">
-        <h1>Sign Up</h1>      
+        <h1>Sign Up</h1>
         <input type="text" name="username" placeholder="Usename"/>
         <input type="email" name="email" placeholder="Email"/>
         <input type="password" name="password_1" placeholder="Password"/>
         <input type="password" name="password_2" placeholder="Repeat Password"/>
         <input class="submit" type="submit" class="btn" name="register_user" value="Submit"></button>
         <div class = "register">
-           <?php 
-               echo "<a class='register' href='login.php'>Sign In</a>"; 
-           ?> 
+           <?php
+               echo "<a class='register' href='login.php'>Sign In</a>";
+           ?>
     </div>
   </form>
 </body>

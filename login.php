@@ -1,5 +1,4 @@
 <?php
-
 // Index.html is in a loop to test credentials
 // include("index.html");
 
@@ -18,7 +17,7 @@ if(isset($_POST['username'])){
     $username = mysqli_real_escape_string($db, $_POST["username"]);
     $password = mysqli_real_escape_string($db, $_POST["password"]);
     // md5 decryption function
-    $sql_query = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
+    $sql_query = "SELECT * FROM users WHERE username = '$username' AND password = '".md5($password)."'";
 
     /* Unsafe SQL code
 
@@ -28,9 +27,9 @@ if(isset($_POST['username'])){
     // Injection example:  123' OR username = 'max' AND '1'='1
 
     */
-    
+
     $result = mysqli_query($db, $sql_query);
-      
+
       // Limit to 1 result, otherwise - incorrect
       if (mysqli_num_rows($result) == 1) {
 
@@ -41,7 +40,7 @@ if(isset($_POST['username'])){
         } else {
         echo "<a class='fail' >The credentials you entered are incorrect.</a>";
         }
-    
+
 }
 ?>
 
@@ -60,7 +59,6 @@ if(isset($_POST['username'])){
     <div class = "register">
        <?php
            echo   "<a class='register' href='register.php'>Sign Up</a>";
-
        ?>
     </div>
 	</form>
