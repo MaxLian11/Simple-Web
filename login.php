@@ -35,7 +35,7 @@ if(isset($_POST['username'])){
 
         session_start();
         $_SESSION["username"] = $username;
-        header("Location:./welcome.php");
+        header("Location:./home.php");
         exit();
         } else {
         echo "<a class='fail' >The credentials you entered are incorrect.</a>";
