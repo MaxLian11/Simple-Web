@@ -1,4 +1,3 @@
-
 <?php
 // Index.html is in a loop to test credentials
 // include("index.html");
@@ -9,149 +8,209 @@ if ($db -> connect_errno) {
   echo "Failed to connect to MySQL: " . $db -> connect_error;
   exit();
 }
-#session_start();
-mysqli_select_db($db, 'registration');
-$sql_query = "SELECT subject, description, tags FROM blog WHERE blog_id = 1";
-$result = mysqli_query($db, $sql_query);
 
-$row = $result->fetch_assoc();
+// sql for blog
+mysqli_select_db($db, 'registration');
+$sql_query_blog = "SELECT blog_id, subject, description, tags, date FROM blog";
+$result_blog = mysqli_query($db, $sql_query_blog);
+$row_blog = $result_blog->fetch_assoc();
+
+// sql for comment
+$sql_query_comment = "SELECT comment_id, comment, user_id, blog_id, date, reaction FROM comment";
+$result_comment = mysqli_query($db, $sql_query_comment);
+$row_comment = $result_comment->fetch_assoc();
+
+
+if(!isset($_SESSION["username"])) {
+    session_start();
+}
+
+if(isset($_POST['submit'])) {
+    $a = $_POST['hiden'];
+    button2($a);
+}
+
 ?>
+
 
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Home page</title>
-  <link rel="stylesheet" href="./style.css">
-  
-<style type='text/css'>
-/* CSS Document */
-body {
-  font-family: "Lucida Grande","Lucida Sans Unicode",geneva,verdana,sans-serif;
-  font-size:10px;
-  color:#777;
-}
-#post-section {
-    width:600px;
-    margin:0 auto;
-}
-#content-section {
-    background-color:black;
-  margin:10px 185px 10px 10px;
-}
-#content-section h1 {
-  font-family:Trebuchet MS, Geneva, Arial, Helvetica, sans-serif;
-  font-size:14px;
-  border-bottom:1px solid #eee;
-  padding:5px;
-  color:white;
-}
-#content-section p {
-  padding:5px;
-  line-height:18px;
-  word-spacing: 0.1em;
-  color:white;
-}
-
-#content-section p2 {
-  padding:5px;
-  line-height:18px;
-  word-spacing: 0.1em;
-}
-
-#content-section .article_menu {
-  text-align:right;
-  padding:5px;
-  margin:10px 0 20px 0;
-  border-top:1px solid #eee;
-}
-#content-section .article_menu b {
-  float:left;
-  font-weight:normal;
-}
-#content-section .article_menu a {
-  padding:0 0 0 15px;
-  background-position:left;
-  background-repeat:no-repeat;
-  color:white;
-  text-decoration:none;
-}
-</style>
-
+    <title>Home page</title>
+    <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
 <div class = "login">
-  <div class= "row">
-    <div class = "column">
-        <?php
-            session_start();
-            echo '<p class="hello" style="display:inline">Welcome </p>';
-            echo($_SESSION["username"]);
-        ?>
+    <div class= "row">
+        <div class = "column_home">
+            <?php
+                if(!isset($_SESSION["username"])) {
+                    session_start();
+                }
+                echo "<p class='hello' style='display:inline'>Welcome </p>";
+                echo($_SESSION["username"]);
+                echo '!';
+            ?>
+        </div>
+        <div class ="column_home">
+            <?php
+                echo "<a class='hello' name='create-post' href='create-post.php'>New Post</a>";
+            ?>
+        </div>
+        <div class="column_home">
+            <form class="box3" method="POST" action="#">
+                <input type="submit" name="test" id="test" value="Initialize Database" />
+                <?php
+                    function insert($flag) {
+
+                        $conn = new mysqli('localhost', 'john', 'pass1234', 'registration');
+
+                        $query = '';
+                        $sqlScript = file('DDL.sql');
+                        foreach ($sqlScript as $line)	{
+
+                            $startWith = substr(trim($line), 0 ,2);
+                            $endWith = substr(trim($line), -1 ,1);
+
+                            if (empty($line) || $startWith == '--' || $startWith == '/*' || $startWith == '//') {
+                                continue;
+                            }
+
+                            $query = $query . $line;
+                            if ($endWith == ';') {
+                                mysqli_query($conn,$query) or die('<div class="login_name">Problem in executing the SQL query <b>' . $query. '</b></div>');
+                                $query= '';
+                            }
+
+                        }
+                    
+                        if ($flag == 1) {
+                            echo '<div>Database was recreated</div>';
+                        } else {
+                            echo '<div>Database was initialized</div>';
+                        }
+                    }
+
+                    if(array_key_exists('test',$_POST)){
+                        $conn = new mysqli('localhost', 'john', 'pass1234', 'registration');
+                        $check = mysqli_query($conn," SELECT * FROM student ") ;
+                        $flag = 0;
+                    if ($check !== False) { $flag = 1; }
+                        insert($flag);
+                    }
+                ?>
+
+            </form>
+        </div>
+        <div class ="column_home">
+            <?php
+                echo "<a class='hello' name='logout' href='login.php' >Log Out</a>";
+                // session will be destroyed when we logout
+                if(!empty($_POST['logout'])) {
+                    session_destroy();
+                }
+            ?>
+        </div>
     </div>
-    <div class="column">
-    <form class="box3" method="POST" action="#">
-        <input type="submit" name="test" id="test" value="Initialize Database" />
-        <?php
-        function insert($flag){
-          $conn =new mysqli('localhost', 'john', 'pass1234', 'registration');
-
-          $query = '';
-          $sqlScript = file('DDL.sql');
-          foreach ($sqlScript as $line)	{
-
-            $startWith = substr(trim($line), 0 ,2);
-            $endWith = substr(trim($line), -1 ,1);
-
-            if (empty($line) || $startWith == '--' || $startWith == '/*' || $startWith == '//') {
-              continue;
-            }
-
-            $query = $query . $line;
-            if ($endWith == ';') {
-              mysqli_query($conn,$query) or die('<div class="login_name">Problem in executing the SQL query <b>' . $query. '</b></div>');
-              //mysqli_query($conn,$query);
-              $query= '';
-            }
-
-          }
-          
-          if ($flag == 1) {
-            echo '<div>Database was recreated</div>';
-          } else {
-            echo '<div>Database was initialized</div>';
-          }
-        }
-
-        if(array_key_exists('test',$_POST)){
-          $conn = new mysqli('localhost', 'john', 'pass1234', 'registration');
-          $check = mysqli_query($conn," SELECT * FROM student ") ;
-          $flag = 0;
-          if ($check !== False) { $flag = 1; }
-          insert($flag);
-      }
-    ?>
-    </form>
-    </div>
-    <div class ="column">
-          <?php
-              echo "<a class='hello' name='logout' href='login.php' >Log Out</a>";
-              // session will be destroyed when we logout
-              if(!empty($_POST['logout'])) {
-                session_destroy();
-              }
-          ?>
-      </div>
-  </div>
-  </div>
-<div id="post-section">
-  <div id="content-section">
-    <h1><?php echo $row["subject"]; ?></h1>
-    <p> <?php echo $row["description"]; ?> </p>
-    <p2><?php echo $row["tags"]; ?> </p2>
-    <div class="article_menu"> <b>Date posted: 2020-11-15</b> <a href="./comments.php">2 Comments</a> </div>
 </div>
-<div><p></p></div>
 
+<div id = "post-section">
+    <div id="content-section">
+        <?php
+            $result_blog = mysqli_query($db, $sql_query_blog);
+
+           
+            if ($result_blog->num_rows > 0) {
+                $reply_flag = 0;
+                $reply_flag_2 = 0;
+                $i = 0;
+                while($row_blog = $result_blog->fetch_assoc()) {
+                    echo "<br></br>";
+                    
+                    echo "<div class='content-section-blog'>";
+                    // post
+                    $blog_id = $row_blog['blog_id'];
+                    echo "<h1>"; echo $row_blog["subject"]; echo "</h1>";
+                    echo "&nbsp"; echo "<p>"; echo $row_blog["description"]; echo "</p>";
+                    echo "&nbsp"; echo "<p2>"; echo $row_blog["tags"]; echo "</p2>";
+                    echo "<div align='right'> <b>Date posted: "; echo $row_blog["date"]; echo "</b>" ;
+                    echo "</div>";
+                    echo "<p2><p>&nbspComments:</p></p2>";
+
+                    // comments for the post
+                    $sql_query_comment = "SELECT comment_id, comment, user_id, blog_id, date, reaction FROM comment WHERE blog_id = $blog_id";
+                    $result_comment = mysqli_query($db, $sql_query_comment);
+                    if ($result_comment->num_rows > 0) {
+                        while($row_comment = $result_comment->fetch_assoc()) {
+                        echo "&nbsp"; echo $row_comment["date"] . "&nbsp;&nbsp;&nbsp;"  . $row_comment["comment"] . "&nbsp;&nbsp;&nbsp;(" . $row_comment["reaction"] . ")<br>" . "<br>";
+                        }
+                    } else {
+                        echo "No comments yet.";
+                        echo "<br></br>";
+                    }
+                    echo "</div>";
+                    button1($blog_id);
+                    
+                }
+            } else {
+                echo "No posts yet.";
+            }
+                
+            function button1($b) { 
+                echo "<div class='comment-section'>";
+                echo "<div class='comment-section-2'>";
+                echo "  <form class='box4' action='home.php' method='post'>";
+                echo "      <label for='menu'> Comment reaction: </label>";
+                echo "      <select name='menu' id='select-reaction'>";
+                echo "          <option  value='Positive'>Positive</option>";
+                echo "          <option  value='Negative'>Negative</option>";
+                echo "      </select>";
+                echo "      <div>";
+                echo "          <textarea name='comments' id='comments' style='font-family:sans-serif;font-size:1.2em; width: 90%; max-width: 90%; margin-top:10px;' placeholder=' Type your comment here'></textarea>";
+                echo "      </div>";
+                echo "      <div>";
+                echo "          <input class='myButton' type='submit' value='Submit' name='submit'>";
+                echo "          <input type='hidden' name='hiden' value="; echo $b; ">";
+                echo "      </div>";
+                echo"   </form>";
+                echo "</div>";
+                echo "</div>";
+            }
+
+            function button2($a){
+                $conn = mysqli_connect('localhost', 'john', 'pass1234', 'registration');
+                mysqli_select_db($conn, 'registration');
+
+                extract($_POST);
+                // comment
+                $msg="$comments";
+                // user id
+                $id = $_SESSION["user_id"];
+                // blog_id FK
+                $blogID = $a;
+                // comment date
+                date_default_timezone_set("America/Los_Angeles");
+                $date = date("Y/m/d");
+                // reaction
+                $selected = $_POST['menu'];
+                
+                $sql = "INSERT INTO `comment` (`comment`, `user_id`, `blog_id`, `date`, `reaction`) 
+                VALUES ('$msg', '$id', '$blogID', '$date', '$selected');";
+            
+                if(!isset($_SESSION["username"])) {
+                    session_start();
+                }
+                if (mysqli_query($conn, $sql)) {
+                    echo "New record created successfully";
+                    echo "<meta http-equiv='refresh' content='0'>";
+                } else {
+                    echo "<div class='error-trigger'>Error: <br>" . mysqli_error($conn); echo "</div>";
+                }
+                mysqli_close($conn);
+            }
+        ?>
+    </div> 
+</div>
 </body>
 </html>

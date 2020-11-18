@@ -30,17 +30,24 @@ if(isset($_POST['username'])){
 
     $result = mysqli_query($db, $sql_query);
 
+    // user id
+    $id_sql_query = "SELECT id FROM users WHERE username = '$username'";
+    $result_user_id = mysqli_query($db, $id_sql_query);
+    $row_user_id = $result_user_id->fetch_assoc();
+    $user_id = (int) $row_user_id['id'];
+
       // Limit to 1 result, otherwise - incorrect
       if (mysqli_num_rows($result) == 1) {
 
         session_start();
         $_SESSION["username"] = $username;
+        $_SESSION["user_id"] = $user_id;
+        $_SESSION["error"] = false;
         header("Location:./home.php");
         exit();
-        } else {
+      } else {
         echo "<a class='fail' >The credentials you entered are incorrect.</a>";
-        }
-
+      }
 }
 ?>
 
