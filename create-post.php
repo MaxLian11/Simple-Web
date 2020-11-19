@@ -68,11 +68,6 @@ function createPost() {
                         echo "<a class='hello' name='create-post' href='home.php'>Home</a>";
                     ?>
                 </div>
-                <div class ="column">
-                    <?php
-                        echo "<a class='hello' name='create-post' href='create-post.php'>New Post</a>";
-                    ?>
-                </div>
                 <div class="column">
                     <form class="box3" method="POST" action="#">
                         <input type="submit" name="test" id="test" value="Initialize Database" />
