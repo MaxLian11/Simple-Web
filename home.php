@@ -11,7 +11,7 @@ if ($db -> connect_errno) {
 
 // sql for blog
 mysqli_select_db($db, 'registration');
-$sql_query_blog = "SELECT blog_id, subject, description, tags, date FROM blog";
+$sql_query_blog = "SELECT blog_id, subject, description, tags, date, user_id FROM blog";
 $result_blog = mysqli_query($db, $sql_query_blog);
 $row_blog = $result_blog->fetch_assoc();
 
@@ -67,7 +67,7 @@ if(isset($_POST['submit'])) {
                         $conn = new mysqli('localhost', 'john', 'pass1234', 'registration');
 
                         $query = '';
-                        $sqlScript = file('DDL.sql');
+                        $sqlScript = file('blog.sql');
                         foreach ($sqlScript as $line)	{
 
                             $startWith = substr(trim($line), 0 ,2);
@@ -82,7 +82,6 @@ if(isset($_POST['submit'])) {
                                 mysqli_query($conn,$query) or die('<div class="login_name">Problem in executing the SQL query <b>' . $query. '</b></div>');
                                 $query= '';
                             }
-
                         }
                     
                         if ($flag == 1) {
@@ -94,7 +93,7 @@ if(isset($_POST['submit'])) {
 
                     if(array_key_exists('test',$_POST)){
                         $conn = new mysqli('localhost', 'john', 'pass1234', 'registration');
-                        $check = mysqli_query($conn," SELECT * FROM student ") ;
+                        $check = mysqli_query($conn," SELECT * FROM blog ") ;
                         $flag = 0;
                     if ($check !== False) { $flag = 1; }
                         insert($flag);
@@ -126,6 +125,11 @@ if(isset($_POST['submit'])) {
                 $reply_flag_2 = 0;
                 $i = 0;
                 while($row_blog = $result_blog->fetch_assoc()) {
+
+                    $user = $row_blog['user_id'];
+                    $sql = "SELECT username FROM users WHERE id = $user";
+                    $res = mysqli_query($db, $sql);
+                    $username = $res->fetch_assoc(); 
                     echo "<br></br>";
                     
                     echo "<div class='content-section-blog'>";
@@ -136,14 +140,23 @@ if(isset($_POST['submit'])) {
                     echo "&nbsp"; echo "<p2>"; echo $row_blog["tags"]; echo "</p2>";
                     echo "<div align='right'> <b>Date posted: "; echo $row_blog["date"]; echo "</b>" ;
                     echo "</div>";
+                    echo "<div align='right'> <b>Author: "; echo $username['username']; echo "</b>" ;
+                    echo "</div>";
                     echo "<p2><p>&nbspComments:</p></p2>";
 
                     // comments for the post
                     $sql_query_comment = "SELECT comment_id, comment, user_id, blog_id, date, reaction FROM comment WHERE blog_id = $blog_id";
+                    $sql_query_comment_username = "SELECT username FROM users INNER JOIN comment ON users.id = comment.user_id WHERE comment.blog_id = $blog_id";
+                    
+                    // get comment and date
                     $result_comment = mysqli_query($db, $sql_query_comment);
+                    // get username
+                    $result_comment_username = mysqli_query($db, $sql_query_comment_username);
+
                     if ($result_comment->num_rows > 0) {
                         while($row_comment = $result_comment->fetch_assoc()) {
-                        echo "&nbsp"; echo $row_comment["date"] . "&nbsp;&nbsp;&nbsp;"  . $row_comment["comment"] . "&nbsp;&nbsp;&nbsp;(" . $row_comment["reaction"] . ")<br>" . "<br>";
+                            $row_comment_username = $result_comment_username->fetch_assoc();
+                            echo "<div class = 'commentary'>&nbspDate: "; echo $row_comment["date"] . "<br>&nbsp;User: " . $row_comment_username["username"] . "<br>&nbsp;Reaction: " .  $row_comment["reaction"] . "<br>&nbsp;&nbsp;&nbsp" . $row_comment["comment"] . "<br>" . "<br> </div>";
                         }
                     } else {
                         echo "No comments yet.";
@@ -154,7 +167,7 @@ if(isset($_POST['submit'])) {
                     
                 }
             } else {
-                echo "No posts yet.";
+                echo "<br></br><br></br><p class='fail'>No posts yet.</p>";
             }
                 
             function button1($b) { 
@@ -183,8 +196,8 @@ if(isset($_POST['submit'])) {
                 mysqli_select_db($conn, 'registration');
 
                 extract($_POST);
-                // comment
-                $msg="$comments";
+                // comment. SQL injection prevention applied
+                $msg = mysqli_real_escape_string($conn, $comments);
                 // user id
                 $id = $_SESSION["user_id"];
                 // blog_id FK

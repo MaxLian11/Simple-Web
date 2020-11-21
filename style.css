@@ -40,7 +40,7 @@ body {
 .box {
     /*width: 300px;*/
     width: 320px;
-    height: 465px;
+    height: 500px;
     /*padding: 40px;*/
     padding: 70px 30px;
     position: absolute;
@@ -514,4 +514,8 @@ button {
 }
 .box4 input[class="submit-post"]:hover {
     background: #2eec71;
+}
+
+.commentary {
+    width: 1000px;
 }

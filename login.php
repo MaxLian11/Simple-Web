@@ -2,6 +2,10 @@
 // Index.html is in a loop to test credentials
 // include("index.html");
 
+if(!empty($_POST['logout'])) {
+  session_destroy();
+}
+
 $db = mysqli_connect('localhost', 'john', 'pass1234', 'registration');
 
 if ($db -> connect_errno) {

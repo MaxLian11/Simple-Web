@@ -16,9 +16,9 @@ function createPost() {
     mysqli_select_db($db, 'registration');
     
     if(!empty($_POST['subject'])) {
-        $subject = $_POST["subject"];
-        $description = $_POST["description"];
-        $tags = $_POST["tag"];
+        $subject = mysqli_real_escape_string($db, $_POST["subject"]);
+        $description = mysqli_real_escape_string($db, $_POST["description"]);
+        $tags = mysqli_real_escape_string($db, $_POST["tag"]);
     }
     date_default_timezone_set("America/Los_Angeles");
     $date = date("Y/m/d");
@@ -60,6 +60,7 @@ function createPost() {
                         }
                         echo '<p class="hello" style="display:inline">Welcome </p>';
                         echo($_SESSION["username"]);
+                        echo '!';
                     ?>
                 </div>
                 
@@ -77,7 +78,7 @@ function createPost() {
                                 $conn = new mysqli('localhost', 'john', 'pass1234', 'registration');
 
                                 $query = '';
-                                $sqlScript = file('DDL.sql');
+                                $sqlScript = file('blog.sql');
                                 foreach ($sqlScript as $line)	{
 
                                     $startWith = substr(trim($line), 0 ,2);
@@ -104,7 +105,7 @@ function createPost() {
 
                             if(array_key_exists('test',$_POST)){
                                 $conn = new mysqli('localhost', 'john', 'pass1234', 'registration');
-                                $check = mysqli_query($conn," SELECT * FROM student ") ;
+                                $check = mysqli_query($conn," SELECT * FROM blog ") ;
                                 $flag = 0;
                             if ($check !== False) { $flag = 1; }
                                 insert($flag);
