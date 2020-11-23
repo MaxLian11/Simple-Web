@@ -38,7 +38,9 @@ if(isset($_POST['username'])){
     $id_sql_query = "SELECT id FROM users WHERE username = '$username'";
     $result_user_id = mysqli_query($db, $id_sql_query);
     $row_user_id = $result_user_id->fetch_assoc();
-    $user_id = (int) $row_user_id['id'];
+    if(isset($row_user_id['id'])) {
+      $user_id = (int) $row_user_id['id'];
+    }
 
       // Limit to 1 result, otherwise - incorrect
       if (mysqli_num_rows($result) == 1) {

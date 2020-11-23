@@ -38,6 +38,37 @@ function createPost() {
     mysqli_close($db);
 }
 
+function insert($flag) {
+
+    $conn = new mysqli('localhost', 'john', 'pass1234', 'registration');
+
+    $query = '';
+    $sqlScript = file('blog.sql');
+    foreach ($sqlScript as $line)	{
+
+        $startWith = substr(trim($line), 0 ,2);
+        $endWith = substr(trim($line), -1 ,1);
+
+        if (empty($line) || $startWith == '--' || $startWith == '/*' || $startWith == '//') {
+            continue;
+        }
+
+        $query = $query . $line;
+        if ($endWith == ';') {
+            mysqli_query($conn,$query) or die('<div class="login_name">Problem in executing the SQL query <b>' . $query. '</b></div>');
+        $query= '';
+        }
+
+    }
+
+    if ($flag == 1) {
+        echo '<div>Database was recreated</div>';
+    } else {
+        echo '<div>Database was initialized</div>';
+    }
+}
+
+
 ?>
 
 
@@ -73,36 +104,7 @@ function createPost() {
                     <form class="box3" method="POST" action="#">
                         <input type="submit" name="test" id="test" value="Initialize Database" />
                         <?php
-                            function insert($flag) {
-
-                                $conn = new mysqli('localhost', 'john', 'pass1234', 'registration');
-
-                                $query = '';
-                                $sqlScript = file('blog.sql');
-                                foreach ($sqlScript as $line)	{
-
-                                    $startWith = substr(trim($line), 0 ,2);
-                                    $endWith = substr(trim($line), -1 ,1);
-
-                                    if (empty($line) || $startWith == '--' || $startWith == '/*' || $startWith == '//') {
-                                        continue;
-                                    }
-
-                                    $query = $query . $line;
-                                    if ($endWith == ';') {
-                                        mysqli_query($conn,$query) or die('<div class="login_name">Problem in executing the SQL query <b>' . $query. '</b></div>');
-                                    $query= '';
-                                    }
-
-                                }
-                    
-                                if ($flag == 1) {
-                                    echo '<div>Database was recreated</div>';
-                                } else {
-                                    echo '<div>Database was initialized</div>';
-                                }
-                            }
-
+                            
                             if(array_key_exists('test',$_POST)){
                                 $conn = new mysqli('localhost', 'john', 'pass1234', 'registration');
                                 $check = mysqli_query($conn," SELECT * FROM blog ") ;

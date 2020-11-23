@@ -11,10 +11,25 @@ if ($db -> connect_errno) {
 
 // sql for blog
 mysqli_select_db($db, 'registration');
-$sql_query_blog = "SELECT blog_id, subject, description, tags, date, user_id FROM blog";
-$result_blog = mysqli_query($db, $sql_query_blog);
-$row_blog = $result_blog->fetch_assoc();
+if(isset($_GET["menu"])){ 
 
+    // store selected username in a variable
+    $selected = $_GET["menu"];
+
+    // query to find all blogs of the selected users which only have positive reviews
+    $sql_query_blog = "SELECT DISTINCT blog.blog_id, blog.subject, blog.description, blog.tags, blog.date, blog.user_id, users.username 
+                        FROM blog 
+                        INNER JOIN comment USING (blog_id) 
+                        INNER JOIN users ON blog.user_id = users.id 
+                        WHERE users.username = '$selected' AND blog.blog_id NOT IN ( 
+                                                    SELECT blog_id 
+                                                    FROM comment 
+                                                    WHERE reaction = 'negative' )";
+
+}
+else {
+    $sql_query_blog = "SELECT blog_id, subject, description, tags, date, user_id FROM blog";
+}
 // sql for comment
 $sql_query_comment = "SELECT comment_id, comment, user_id, blog_id, date, reaction FROM comment";
 $result_comment = mysqli_query($db, $sql_query_comment);
@@ -30,7 +45,92 @@ if(isset($_POST['submit'])) {
     button2($a);
 }
 
+function insert($flag) {
+
+    $conn = new mysqli('localhost', 'john', 'pass1234', 'registration');
+
+    $query = '';
+    $sqlScript = file('blog.sql');
+    foreach ($sqlScript as $line)	{
+
+        $startWith = substr(trim($line), 0 ,2);
+        $endWith = substr(trim($line), -1 ,1);
+
+        if (empty($line) || $startWith == '--' || $startWith == '/*' || $startWith == '//') {
+            continue;
+        }
+
+        $query = $query . $line;
+        if ($endWith == ';') {
+            mysqli_query($conn,$query) or die('<div class="login_name">Problem in executing the SQL query <b>' . $query. '</b></div>');
+            $query= '';
+        }
+    }
+
+    if ($flag == 1) {
+        echo '<div>Database was recreated</div>';
+    } else {
+        echo '<div>Database was initialized</div>';
+    }
+}
+
+function button1($b) { 
+    echo "<div class='comment-section'>";
+    echo "<div class='comment-section-2'>";
+    echo "  <form class='box4' action='home.php' method='post'>";
+    echo "      <label for='menu'> Comment reaction: </label>";
+    echo "      <select name='menu' id='select-reaction'>";
+    echo "          <option  value='Positive'>Positive</option>";
+    echo "          <option  value='Negative'>Negative</option>";
+    echo "      </select>";
+    echo "      <div>";
+    echo "          <textarea name='comments' id='comments' style='font-family:sans-serif;font-size:1.2em; width: 90%; max-width: 90%; margin-top:10px;' placeholder=' Type your comment here'></textarea>";
+    echo "      </div>";
+    echo "      <div>";
+    echo "          <input class='myButton' type='submit' value='Submit' name='submit'>";
+    echo "          <input type='hidden' name='hiden' value="; echo $b; ">";
+    echo "      </div>";
+    echo"   </form>";
+    echo "</div>";
+    echo "</div>";
+}
+
+function button2($a){
+    $conn = mysqli_connect('localhost', 'john', 'pass1234', 'registration');
+    mysqli_select_db($conn, 'registration');
+
+    extract($_POST);
+    // comment. SQL injection prevention applied
+    $msg = mysqli_real_escape_string($conn, $comments);
+    // user id
+    $id = $_SESSION["user_id"];
+    // blog_id FK
+    $blogID = $a;
+    // comment date
+    date_default_timezone_set("America/Los_Angeles");
+    $date = date("Y/m/d");
+    // reaction
+    $selected = $_POST['menu'];
+    
+    $sql = "INSERT INTO `comment` (`comment`, `user_id`, `blog_id`, `date`, `reaction`) 
+    VALUES ('$msg', '$id', '$blogID', '$date', '$selected');";
+
+    if(!isset($_SESSION["username"])) {
+        session_start();
+    }
+    if (mysqli_query($conn, $sql)) {
+        echo "New record created successfully";
+        echo "<meta http-equiv='refresh' content='0'>";
+    } else {
+        echo "<div class='error-trigger'>Error: <br>" . mysqli_error($conn); echo "</div>";
+    }
+    mysqli_close($conn);
+}
+
 ?>
+
+
+
 
 
 <!DOCTYPE html>
@@ -58,38 +158,15 @@ if(isset($_POST['submit'])) {
                 echo "<a class='hello' name='create-post' href='create-post.php'>New Post</a>";
             ?>
         </div>
+        <div class ="column_home">
+            <?php
+                echo "<a class='hello' name='users' href='users.php'>Users</a>";
+            ?>
+        </div>
         <div class="column_home">
             <form class="box3" method="POST" action="#">
                 <input type="submit" name="test" id="test" value="Initialize Database" />
                 <?php
-                    function insert($flag) {
-
-                        $conn = new mysqli('localhost', 'john', 'pass1234', 'registration');
-
-                        $query = '';
-                        $sqlScript = file('blog.sql');
-                        foreach ($sqlScript as $line)	{
-
-                            $startWith = substr(trim($line), 0 ,2);
-                            $endWith = substr(trim($line), -1 ,1);
-
-                            if (empty($line) || $startWith == '--' || $startWith == '/*' || $startWith == '//') {
-                                continue;
-                            }
-
-                            $query = $query . $line;
-                            if ($endWith == ';') {
-                                mysqli_query($conn,$query) or die('<div class="login_name">Problem in executing the SQL query <b>' . $query. '</b></div>');
-                                $query= '';
-                            }
-                        }
-                    
-                        if ($flag == 1) {
-                            echo '<div>Database was recreated</div>';
-                        } else {
-                            echo '<div>Database was initialized</div>';
-                        }
-                    }
 
                     if(array_key_exists('test',$_POST)){
                         $conn = new mysqli('localhost', 'john', 'pass1234', 'registration');
@@ -113,17 +190,39 @@ if(isset($_POST['submit'])) {
         </div>
     </div>
 </div>
+<hr>
+<br>
+
+<div style="float:right;margin-right:30px;">
+        <form>
+            <p class="blog-filter">Display blogs with only positive comments, published by user:<br>
+            <select  name='menu' id='select-reaction' onchange='this.form.submit()'>;
+                <option value="" disabled selected>
+                    <?php if(isset($_GET["menu"])){ echo $_GET["menu"];} else { echo "Select User"; } ?></option>
+                <?php
+                    $sql_users = "SELECT * FROM users";
+                    $result_users = mysqli_query($db, $sql_users);
+                    while($row_user = $result_users->fetch_assoc()) {
+                        if(isset($_GET["menu"])) {
+                            if($_GET["menu"] != $row_user["username"]) {
+                                echo "<option  value='"; echo $row_user["username"]; echo "'>"; echo $row_user["username"]; echo "</option>";
+                            }
+                        } else {
+                            echo "<option  value='"; echo $row_user["username"]; echo "'>"; echo $row_user["username"]; echo "</option>";
+                        }
+                    }
+                ?></p>
+            </select>
+        </form>
+</div>
 
 <div id = "post-section">
     <div id="content-section">
         <?php
             $result_blog = mysqli_query($db, $sql_query_blog);
-
-           
+        
             if ($result_blog->num_rows > 0) {
-                $reply_flag = 0;
-                $reply_flag_2 = 0;
-                $i = 0;
+                // loop to list all the blogs
                 while($row_blog = $result_blog->fetch_assoc()) {
 
                     $user = $row_blog['user_id'];
@@ -150,13 +249,14 @@ if(isset($_POST['submit'])) {
                     
                     // get comment and date
                     $result_comment = mysqli_query($db, $sql_query_comment);
+
                     // get username
                     $result_comment_username = mysqli_query($db, $sql_query_comment_username);
 
                     if ($result_comment->num_rows > 0) {
                         while($row_comment = $result_comment->fetch_assoc()) {
                             $row_comment_username = $result_comment_username->fetch_assoc();
-                            echo "<div class = 'commentary'>&nbspDate: "; echo $row_comment["date"] . "<br>&nbsp;User: " . $row_comment_username["username"] . "<br>&nbsp;Reaction: " .  $row_comment["reaction"] . "<br>&nbsp;&nbsp;&nbsp" . $row_comment["comment"] . "<br>" . "<br> </div>";
+                            echo "<div class = 'commentary'>&nbspDate: " . $row_comment["date"] . "<br>&nbsp;User: " . $row_comment_username["username"] . "<br>&nbsp;Reaction: " .  $row_comment["reaction"] . "<br>&nbsp;&nbsp;&nbsp" . $row_comment["comment"] . "<br>" . "<br> </div>";
                         }
                     } else {
                         echo "No comments yet.";
@@ -170,58 +270,6 @@ if(isset($_POST['submit'])) {
                 echo "<br></br><br></br><p class='fail'>No posts yet.</p>";
             }
                 
-            function button1($b) { 
-                echo "<div class='comment-section'>";
-                echo "<div class='comment-section-2'>";
-                echo "  <form class='box4' action='home.php' method='post'>";
-                echo "      <label for='menu'> Comment reaction: </label>";
-                echo "      <select name='menu' id='select-reaction'>";
-                echo "          <option  value='Positive'>Positive</option>";
-                echo "          <option  value='Negative'>Negative</option>";
-                echo "      </select>";
-                echo "      <div>";
-                echo "          <textarea name='comments' id='comments' style='font-family:sans-serif;font-size:1.2em; width: 90%; max-width: 90%; margin-top:10px;' placeholder=' Type your comment here'></textarea>";
-                echo "      </div>";
-                echo "      <div>";
-                echo "          <input class='myButton' type='submit' value='Submit' name='submit'>";
-                echo "          <input type='hidden' name='hiden' value="; echo $b; ">";
-                echo "      </div>";
-                echo"   </form>";
-                echo "</div>";
-                echo "</div>";
-            }
-
-            function button2($a){
-                $conn = mysqli_connect('localhost', 'john', 'pass1234', 'registration');
-                mysqli_select_db($conn, 'registration');
-
-                extract($_POST);
-                // comment. SQL injection prevention applied
-                $msg = mysqli_real_escape_string($conn, $comments);
-                // user id
-                $id = $_SESSION["user_id"];
-                // blog_id FK
-                $blogID = $a;
-                // comment date
-                date_default_timezone_set("America/Los_Angeles");
-                $date = date("Y/m/d");
-                // reaction
-                $selected = $_POST['menu'];
-                
-                $sql = "INSERT INTO `comment` (`comment`, `user_id`, `blog_id`, `date`, `reaction`) 
-                VALUES ('$msg', '$id', '$blogID', '$date', '$selected');";
-            
-                if(!isset($_SESSION["username"])) {
-                    session_start();
-                }
-                if (mysqli_query($conn, $sql)) {
-                    echo "New record created successfully";
-                    echo "<meta http-equiv='refresh' content='0'>";
-                } else {
-                    echo "<div class='error-trigger'>Error: <br>" . mysqli_error($conn); echo "</div>";
-                }
-                mysqli_close($conn);
-            }
         ?>
     </div> 
 </div>
