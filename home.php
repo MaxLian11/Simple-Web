@@ -108,17 +108,15 @@
                     else
                         $sql = "INSERT INTO `follows` (`user_id`, `follower_id`) VALUES ($author_id, $current_user_id);";
                     
-                    if(!isset($_SESSION["username"]) && $author_info['id'] == $follower_id['follower_id']) {
-                        session_start();    
-                    }
                     
-                    if (mysqli_query($db, $sql)) {    
+                    if ($author_id == $current_user_id) {
+                        echo "Error! You cannot subscribe to yourself.";
+                        echo "<meta http-equiv='refresh' content='5'>";
+                    } else if (mysqli_query($db, $sql)) {    
                         echo "<meta http-equiv='refresh' content='0'>";
-                        
                     } else {
                         echo "Error";
-                        echo "<meta http-equiv='refresh' content='5'>";
-
+                        echo "<meta http-equiv='refresh' content='0'>";
                     }
                     mysqli_close($db);
                     break;
