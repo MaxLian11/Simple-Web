@@ -28,7 +28,8 @@
                                 WHERE users.username = '$selected' AND blog.blog_id NOT IN ( 
                                                             SELECT blog_id 
                                                             FROM comment 
-                                                            WHERE reaction = 'negative' )";
+                                                            WHERE reaction = 'negative' )
+                                GROUP BY blog_id";
             
         }
         else {

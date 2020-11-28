@@ -42,6 +42,8 @@ function insert($flag) {
     }
 }
 
+
+
 ?>
 
 <!DOCTYPE html>
@@ -101,6 +103,7 @@ function insert($flag) {
 <div class = "filter-menu">
     <div id = "row"> <!-- filter menu row -->
 
+        <!--  FILTER 1 -->
         <div class = "column-filter"> <!-- filter menu columns -->
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -117,24 +120,73 @@ function insert($flag) {
             <form>List most active user on this day:  <input type="text" name="date-input" autocomplete="off" id="datepicker" placeholder ="Choose Date" onchange='this.form.submit()'>
             </form>
         </div>
+        <!--  FILTER 1 -->
+
+        <!--  FILTER 2 -->
+        <div class = "column-filter"> <!-- filter menu columns -->
+            <p>Followed by these users:</p>
+            <form>
+            <select  name='user-1' id='select-reaction'>;
+                <option value="None">
+                    <?php if(isset($_GET["menu"])){ echo $_GET["menu"];} else { echo "Select User"; } ?>
+                </option>
+                <?php
+                    $sql_users = "SELECT * FROM users";
+                    $result_users = mysqli_query($db, $sql_users);
+                    while($row_user = $result_users->fetch_assoc()) {
+                        if(isset($_GET["menu"])) {
+                            if($_GET["menu"] != $row_user["username"]) {
+                                echo "<option  value='".$row_user["username"]."'>".$row_user["username"]."</option>";
+                            }
+                        } else {
+                            echo "<option  value='".$row_user["username"]."'>".$row_user["username"]."</option>";
+                        }
+                    }
+                    if(isset($_GET["menu"]) && ($_GET["menu"] != " - None - ")){
+                        echo "<option value=' - None - '> - None - </option>";
+                    }
+                ?>
+            </select>
+            <select  name='user-2' id='select-reaction'>;
+                <option value="None">
+                    <?php if(isset($_GET["menu"])){ echo $_GET["menu"];} else { echo "Select User"; } ?>
+                </option>
+                <?php
+                    $sql_users = "SELECT * FROM users";
+                    $result_users = mysqli_query($db, $sql_users);
+                    while($row_user = $result_users->fetch_assoc()) {
+                        if(isset($_GET["menu"])) {
+                            if($_GET["menu"] != $row_user["username"]) {
+                                echo "<option  value='".$row_user["username"]."'>".$row_user["username"]."</option>";
+                            }
+                        } else {
+                            echo "<option  value='".$row_user["username"]."'>".$row_user["username"]."</option>";
+                        }
+                    }
+                    if(isset($_GET["menu"]) && ($_GET["menu"] != " - None - ")){
+                        echo "<option value=' - None - '> - None - </option>";
+                    }
+                ?>
+            </select>
+            <input class="form-input" type="submit" name="submit-users" onchange='this.form.submit()' /></form>
+        </div>
+        <!--  FILTER 2 -->
+
+        <!--  FILTER 3 -->
+        <div class = "column-filter"> <!-- filter menu columns -->
+            <p>List non active users</p>
+            <form><input class="form-input" type="submit" name="non-active" onchange='this.form.submit()' /></form>
+        </div>
+        <!--  FILTER 3 -->  
 
         <div class = "column-filter"> <!-- filter menu columns -->
-            <p>Followed by these users: (task 3)</p>
-            <input class="form-input" type="submit" type="submit" value="Input 1"/>
-            <input class="form-input" type="submit" type="submit" value="Input 1"/>
-            <input class="form-input" type="submit" type="submit" value="Submit"/>
+            <p>List Haters</p>
+            <form><input class="form-input" type="submit" name="haters" onchange='this.form.submit()' /></form>
         </div>
 
         <div class = "column-filter"> <!-- filter menu columns -->
-            <p>List Haters (task 4)</p>
-        </div>
-
-        <div class = "column-filter"> <!-- filter menu columns -->
-            <p>List non active users (task 5)</p>
-        </div>
-
-        <div class = "column-filter"> <!-- filter menu columns -->
-            <p>List non popular users (taks 6)</p>
+            <p>List Respected Users</p>
+            <form><input class="form-input" type="submit" name="respected" onchange='this.form.submit()' /></form>
         </div>
 
         <div class ="column-filter">
@@ -172,7 +224,91 @@ function insert($flag) {
         }
     
     }
-    else{
+    else if (isset($_GET["submit-users"])) {
+        
+        $selected_user_1 = $_GET["user-1"];
+        $selected_user_2 = $_GET["user-2"];
+
+        $sql_toId_1 = "SELECT id FROM users WHERE username = '$selected_user_1';";
+        $result_user_1 = mysqli_query($db, $sql_toId_1);
+        $row_user_1 = $result_user_1->fetch_assoc();
+        $user_id_1 = $row_user_1['id'];
+
+        $sql_toId_2 = "SELECT id FROM users WHERE username = '$selected_user_2';";
+        $result_user_2 = mysqli_query($db, $sql_toId_2);
+        $row_user_2 = $result_user_2->fetch_assoc();
+        $user_id_2 = $row_user_2['id'];
+        
+        echo $row_user_2['id'];
+
+        $sql_users = "SELECT *
+                        FROM users 
+                        WHERE id IN ( SELECT user_id AS id FROM follows WHERE follower_id = '$user_id_1') 
+                        AND id IN ( SELECT user_id AS id FROM follows WHERE follower_id = '$user_id_2');";
+
+        $result_users = mysqli_query($db, $sql_users);
+        while($row_user = $result_users->fetch_assoc()) {
+
+            echo "<div class = 'section-user'>";
+            echo    "<br>";
+            echo    "<p style='color:white'>Username: <span class='hello'>" . $row_user['username'] . "</span></p>";
+            echo "</div>";
+        }
+    }
+    else if (isset($_GET["non-active"])) {
+
+        $sql_users = "SELECT * FROM users WHERE id NOT IN( SELECT user_id FROM blog );";
+
+        $result_users = mysqli_query($db, $sql_users);
+        while($row_user = $result_users->fetch_assoc()) {
+
+            echo "<div class = 'section-user'>";
+            echo    "<br>";
+            echo    "<p style='color:white'>Username: <span class='hello'>" . $row_user['username'] . "</span></p>";
+            echo "</div>";
+        }
+    }
+    else if (isset($_GET["haters"])) {
+
+        $sql_users = "SELECT id AS user_id, users.* 
+                        FROM users WHERE id IN( SELECT DISTINCT (comment.user_id) 
+                                                FROM comment 
+                                                INNER JOIN blog USING(blog_id) 
+                                                WHERE reaction = 'negative' AND comment.user_id NOT IN( SELECT DISTINCT (comment.user_id) 
+                                                                                                        FROM comment INNER JOIN blog USING(blog_id) 
+                                                                                                        WHERE reaction = 'positive' ) )";
+                                                                                    
+
+        $result_users = mysqli_query($db, $sql_users);
+        while($row_user = $result_users->fetch_assoc()) {
+
+            echo "<div class = 'section-user'>";
+            echo    "<br>";
+            echo    "<p style='color:white'>Username: <span class='hello'>" . $row_user['username'] . "</span></p>";
+            echo "</div>";
+        }
+    }
+    else if (isset($_GET["respected"])) {
+
+        $sql_users = "SELECT DISTINCT(users.id) as user_id, users.* 
+                        FROM users INNER JOIN blog ON blog.user_id = users.id 
+                        WHERE user_id IN (SELECT blog.user_id 
+                                            FROM blog INNER JOIN comment ON comment.blog_id = blog.blog_id 
+                                            WHERE blog.user_id NOT IN (SELECT DISTINCT(comment.user_id) 
+                                                                        FROM comment INNER JOIN blog ON comment.blog_id = blog.blog_id 
+                                                                        WHERE reaction = 'Negative'))";
+                                                                                                
+
+        $result_users = mysqli_query($db, $sql_users);
+        while($row_user = $result_users->fetch_assoc()) {
+
+            echo "<div class = 'section-user'>";
+            echo    "<br>";
+            echo    "<p style='color:white'>Username: <span class='hello'>" . $row_user['username'] . "</span></p>";
+            echo "</div>";
+        }
+    }
+    else {
         $sql_users = "SELECT * FROM users";
         $result_users = mysqli_query($db, $sql_users);
         while($row_user = $result_users->fetch_assoc()) {
