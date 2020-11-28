@@ -68,7 +68,7 @@ if(isset($_POST['username'])){
 		<h1>Sign In</h1>
 		<input type="text" name="username" placeholder="Username"/>
 		<input type="password" name="password" placeholder="Password"/>
-    <input class="form-input" type="submit" type="submit" value="Sign In" class="btn-login"/>
+    <input class="form-input" type="submit" value="Sign In" class="btn-login"/>
     <div class = "register">
        <?php
            echo   "<a class='register' href='register.php'>Sign Up</a>";

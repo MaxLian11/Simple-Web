@@ -56,8 +56,7 @@ function insert($flag) {
     <div class= "row">
         <div class = "column">
             <?php
-                if(!isset($_SESSION["username"]))
-                {
+                if(!isset($_SESSION["username"])) {
                     session_start();
                 }
                 echo '<p class="hello" style="display:inline">Welcome </p>';
@@ -115,8 +114,7 @@ function insert($flag) {
                     $( "#datepicker" ).datepicker({ dateFormat: 'yy-mm-dd' }).val();
                 } );
             </script>
-            <form>
-            List most active users on: (task 2): <input type="text" name="date-input" id="datepicker" onchange='this.form.submit()'>
+            <form>List most active user on this day:  <input type="text" name="date-input" autocomplete="off" id="datepicker" placeholder ="Choose Date" onchange='this.form.submit()'>
             </form>
         </div>
 
@@ -138,6 +136,12 @@ function insert($flag) {
         <div class = "column-filter"> <!-- filter menu columns -->
             <p>List non popular users (taks 6)</p>
         </div>
+
+        <div class ="column-filter">
+            <?php
+                echo "<a class='hello' name='create-post' href='users.php'>Reset</a>";
+            ?>
+        </div>
     </div> <!-- end row div -->
 </div> <!-- end filter-menu div -->
 <hr>
@@ -148,11 +152,28 @@ function insert($flag) {
     if(isset($_GET["date-input"])){
 
         $selected_date = $_GET["date-input"];
-        $sql_users = "SELECT * FROM users INNER JOIN blog ON users.id = blog.user_id WHERE username = 'max' AND blog.date = '$selected_date'";
+
+        $sql_users = "SELECT number_of_posts, username, date
+                        FROM( SELECT COUNT(*) AS number_of_posts, users.username, blog.date, RANK() OVER (ORDER BY number_of_posts DESC) AS rk
+						            FROM blog JOIN users ON users.id = blog.user_id 
+                                    WHERE blog.date = '$selected_date'
+                                    GROUP BY users.username 
+                                    ORDER BY number_of_posts DESC ) t
+                        WHERE rk <= 1";
+
+        $result_users = mysqli_query($db, $sql_users);
+        while($row_user = $result_users->fetch_assoc()) {
+
+            echo "<div class = 'section-user'>";
+            echo    "<br>";
+            echo    "<p style='color:white'>Username: <span class='hello'>" . $row_user['username'] . "</span></p>";
+            echo    "<p style='color:white'>Number of blogs posted on ". $row_user['date'] .": <span class='hello'>" . $row_user['number_of_posts'] . "</span></p>";
+            echo "</div>";
+        }
+    
     }
     else{
         $sql_users = "SELECT * FROM users";
-    }
         $result_users = mysqli_query($db, $sql_users);
         while($row_user = $result_users->fetch_assoc()) {
 
@@ -168,6 +189,7 @@ function insert($flag) {
             echo    "<p style='color:white'>Number of blogs posted: <span class='hello'>" . $row_blogs['blog_count'] . "</span></p>";
             echo "</div>";
         }
+    }
     ?>
 </div>
 </body>

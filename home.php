@@ -5,56 +5,58 @@
     $db = mysqli_connect('localhost', 'john', 'pass1234', 'registration');
 
     if ($db -> connect_errno) {
-    echo "Failed to connect to MySQL: " . $db -> connect_error;
-    exit();
+        echo "Failed to connect to MySQL: " . $db -> connect_error;
+        exit();
     }
-
-    function postSection ($db) {
-    // get sql query for blog
-    mysqli_select_db($db, 'registration');
-
-    if(isset($_GET["menu"])){ 
-
-        // store selected username in a variable
-        $selected = $_GET["menu"];
-
-        // query to find all blogs of the selected users which only have positive reviews
-        $sql_query_blog = "SELECT DISTINCT blog.blog_id, blog.subject, blog.description, blog.tags, blog.date, blog.user_id, users.username 
-                            FROM blog 
-                            INNER JOIN comment USING (blog_id) 
-                            INNER JOIN users ON blog.user_id = users.id 
-                            WHERE users.username = '$selected' AND blog.blog_id NOT IN ( 
-                                                        SELECT blog_id 
-                                                        FROM comment 
-                                                        WHERE reaction = 'negative' )";
-
-    }
-    else {
-        $sql_query_blog = "SELECT blog_id, subject, description, tags, date, user_id FROM blog";
-    }
-
-    // sql for comment
-    $sql_query_comment = "SELECT comment_id, comment, user_id, blog_id, date, reaction FROM comment";
-    $result_comment = mysqli_query($db, $sql_query_comment);
-    $row_comment = $result_comment->fetch_assoc();
-
     if(!isset($_SESSION["username"])) {
         session_start();
     }
+    function postSection ($db) {
+        // get sql query for blog
+        mysqli_select_db($db, 'registration');
 
-    if(isset($_POST['submit'])) {
-        $blog_id = $_POST['hiden'];
-        commentSubmit($blog_id);
-    }
+        if(isset($_GET["menu"]) && !($_GET["menu"] == " - None - ")) { 
 
-    $result_blog = mysqli_query($db, $sql_query_blog);
+            // store selected username in a variable
+            $selected = $_GET["menu"];
+
+            // query to find all blogs of the selected users which only have positive reviews
+            $sql_query_blog = "SELECT DISTINCT * 
+                                FROM blog 
+                                INNER JOIN comment USING (blog_id) 
+                                INNER JOIN users ON blog.user_id = users.id 
+                                WHERE users.username = '$selected' AND blog.blog_id NOT IN ( 
+                                                            SELECT blog_id 
+                                                            FROM comment 
+                                                            WHERE reaction = 'negative' )";
+            
+        }
+        else {
+            $sql_query_blog = "SELECT blog_id, subject, description, tags, date, user_id FROM blog";
+        }
+
+        // sql for comment
+        $sql_query_comment = "SELECT comment_id, comment, user_id, blog_id, date, reaction FROM comment";
+        $result_comment = mysqli_query($db, $sql_query_comment);
+        $row_comment = $result_comment->fetch_assoc();
+
+        if(!isset($_SESSION["username"])) {
+            session_start();
+        }
+
+        if(isset($_POST['submit'])) {
+            $blog_id = $_POST['blog-id'];
+            commentSubmit($blog_id);
+        }
+
+        $result_blog = mysqli_query($db, $sql_query_blog);
         
         if ($result_blog->num_rows > 0) {
             // loop to list all the blogs
             while($row_blog = $result_blog->fetch_assoc()) {
                 // get info of the author of the blog
                 $author = $row_blog['user_id'];
-                $sql_author = "SELECT * FROM users WHERE id = $author";
+                $sql_author = "SELECT username, id FROM users WHERE id = $author";
                 $result_author = mysqli_query($db, $sql_author);
                 $author_info = $result_author->fetch_assoc();
 
@@ -76,7 +78,9 @@
                 echo "<div align='right'> <b>Author: " . $author_username . "</b><br>" ;
 
                 // sql query to check if a current user follows the author of a blog
-                $sql_follows_check = "SELECT * FROM users INNER JOIN follows ON users.id = follows.user_id WHERE follower_id = $current_user_id AND username = '$author_username'";
+                $sql_follows_check = "SELECT * 
+                                        FROM users INNER JOIN follows ON users.id = follows.user_id 
+                                        WHERE follower_id = $current_user_id AND username = '$author_username'";
                 $result_follows_check = mysqli_query($db, $sql_follows_check);
 
                 // follow / unfollow button BEGIN
@@ -89,30 +93,38 @@
                 else{ // if current user doesn't follow an author
                     echo "<input class='myButton' type='submit' value='Follow' name='follow'></b>" ;
                 }
+
+                // keep track of what is the current author id
+                echo "<input type='hidden' name='hidden-author-id' value=".$author_info['id'].">";
                 echo"</form>";
-                    
+
                 if(isset($_POST['follow']) || isset($_POST['unfollow'])) {
                     $db = mysqli_connect('localhost', 'john', 'pass1234', 'registration');
                     mysqli_select_db($db, 'registration');
+                    $author_id = $_POST['hidden-author-id'];
 
-                    if(isset($_POST['unfollow'])) {
+                    if(isset($_POST['unfollow']))
                         $sql = "DELETE FROM `follows` WHERE `follows`.`user_id` = '$author_id' AND `follows`.`follower_id` = '$current_user_id'";
-                    }
-                    else {
-                        $sql = "INSERT INTO `follows` (`user_id`, `follower_id`) VALUES ('$author_id', '$current_user_id')";
-                    }
+                    else
+                        $sql = "INSERT INTO `follows` (`user_id`, `follower_id`) VALUES ($author_id, $current_user_id);";
                     
-                    if(!isset($_SESSION["username"]) && $author_info['id'] == $follower_id['follower_id'])
+                    if(!isset($_SESSION["username"]) && $author_info['id'] == $follower_id['follower_id']) {
                         session_start();    
+                    }
                     
-                    if (mysqli_query($db, $sql)) {  
-                        echo "<meta http-equiv='refresh' content='0'>"; 
-                    } else {
+                    if (mysqli_query($db, $sql)) {    
                         echo "<meta http-equiv='refresh' content='0'>";
+                        
+                    } else {
+                        echo "Error";
+                        echo "<meta http-equiv='refresh' content='5'>";
+
                     }
                     mysqli_close($db);
                     break;
-                } 
+                }
+                
+                
                 // Follow button END
 
                 echo "</div>";
@@ -151,11 +163,12 @@
                     
     }
 
+
     function filterBlogs($db) {
         ?>
         <p class="blog-filter">Display blogs with only positive comments, published by user:<br>
             <select  name='menu' id='select-reaction' onchange='this.form.submit()'>;
-                <option value="" disabled selected>
+                <option value="None">
                     <?php if(isset($_GET["menu"])){ echo $_GET["menu"];} else { echo "Select User"; } ?>
                 </option>
                 <?php
@@ -164,18 +177,23 @@
                     while($row_user = $result_users->fetch_assoc()) {
                         if(isset($_GET["menu"])) {
                             if($_GET["menu"] != $row_user["username"]) {
-                                echo "<option  value='"; echo $row_user["username"]; echo "'>"; echo $row_user["username"]; echo "</option>";
+                                echo "<option  value='".$row_user["username"]."'>".$row_user["username"]."</option>";
                             }
                         } else {
-                            echo "<option  value='"; echo $row_user["username"]; echo "'>"; echo $row_user["username"]; echo "</option>";
+                            echo "<option  value='".$row_user["username"]."'>".$row_user["username"]."</option>";
                         }
                     }
-                ?></p>
+                    if(isset($_GET["menu"]) && ($_GET["menu"] != " - None - ")){
+                        echo "<option value=' - None - '> - None - </option>";
+                    }
+                ?>
             </select>
+        </p>
         <?php
     } 
 
-    function insert($flag) {
+
+    function initializeDatabase($flag) {
 
         $db = new mysqli('localhost', 'john', 'pass1234', 'registration');
 
@@ -204,28 +222,30 @@
         }
     }
 
-    function leaveComment($b) { 
+
+    function leaveComment($blog_id) { 
         ?>
         <div class='comment-section'>
-        <div class='comment-section-2'>
-        <form class='box4' action='home.php' method='post'>
-            <label for='menu'> Comment reaction: </label>
-            <select name='menu' id='select-reaction'>
-                <option  value='Positive'>Positive</option>
-                <option  value='Negative'>Negative</option>
-            </select>
-            <div>
-                <textarea name='comments' id='comments' style='font-family:sans-serif;font-size:1.2em; width: 90%; max-width: 90%; margin-top:10px;' placeholder=' Type your comment here'></textarea>
+            <div class='comment-section-2'>
+                <form class='box4' action='home.php' method='post'>
+                    <label for='menu'> Comment reaction: </label>
+                    <select name='menu' id='select-reaction'>
+                        <option  value='Positive'>Positive</option>
+                        <option  value='Negative'>Negative</option>
+                    </select>
+                    <div>
+                        <textarea name='comments' id='comments' style='font-family:sans-serif;font-size:1.2em; width: 90%; max-width: 90%; margin-top:10px;' placeholder=' Type your comment here'></textarea>
+                    </div>
+                    <div>
+                        <input class='myButton' type='submit' value='Submit' name='submit'>
+                        <input type='hidden' name='blog-id' value='<?php echo $blog_id ?>'>
+                    </div>
+                </form>
             </div>
-            <div>
-                <input class='myButton' type='submit' value='Submit' name='submit'>
-                <input type='hidden' name='hiden' value='<?php $b ?>'>
-            </div>
-        </form>
-        </div>
         </div>
         <?php
     }
+
 
     function commentSubmit($blog_id){
         $db = mysqli_connect('localhost', 'john', 'pass1234', 'registration');
@@ -237,7 +257,7 @@
         // user id
         $id = $_SESSION["user_id"];
         // blog_id FK
-        $blogID = $blog_id;
+        //$blog_id;
         // comment date
         date_default_timezone_set("America/Los_Angeles");
         $date = date("Y/m/d");
@@ -245,7 +265,7 @@
         $selected = $_POST['menu'];
         
         $sql = "INSERT INTO `comment` (`comment`, `user_id`, `blog_id`, `date`, `reaction`) 
-        VALUES ('$msg', '$id', '$blogID', '$date', '$selected');";
+        VALUES ('$msg', '$id', '$blog_id', '$date', '$selected');";
 
         if(!isset($_SESSION["username"])) {
             session_start();
@@ -254,7 +274,7 @@
             echo "New record created successfully";
             echo "<meta http-equiv='refresh' content='0'>";
         } else {
-            echo "<div class='error-trigger'>Error: <br>" . mysqli_error($db); echo "</div>";
+            echo "<div class='error-trigger'>Error: <br>" . mysqli_error($db) . "</div>";
         }
         mysqli_close($db);
     }
@@ -302,7 +322,7 @@
                                 $check = mysqli_query($db," SELECT * FROM blog ") ;
                                 $flag = 0;
                             if ($check !== False) { $flag = 1; }
-                                insert($flag);
+                                initializeDatabase($flag);
                             }
                         ?>
                     </form>

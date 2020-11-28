@@ -32,13 +32,13 @@ function createPost() {
         echo "New record created successfully";
         header("Location:./home.php");
     } else {
-        echo "<div class='error-trigger'>Error: <br>" . mysqli_error($db); echo "</div>";
+        echo "<div class='error-trigger'>Error: <br>" . mysqli_error($db)."</div>";
     }
     //echo "<meta http-equiv='refresh' content='0'>";
     mysqli_close($db);
 }
 
-function insert($flag) {
+function initializeDatabase($flag) {
 
     $conn = new mysqli('localhost', 'john', 'pass1234', 'registration');
 
@@ -110,7 +110,7 @@ function insert($flag) {
                                 $check = mysqli_query($conn," SELECT * FROM blog ") ;
                                 $flag = 0;
                             if ($check !== False) { $flag = 1; }
-                                insert($flag);
+                                initializeDatabase($flag);
                             }
                         ?>
                     </form>
