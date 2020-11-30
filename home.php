@@ -16,12 +16,12 @@
         mysqli_select_db($db, 'registration');
 
         if(isset($_GET["menu"]) && !($_GET["menu"] == " - None - ")) { 
-
+            echo"hey1";
             // store selected username in a variable
             $selected = $_GET["menu"];
 
             // query to find all blogs of the selected users which only have positive reviews
-            $sql_query_blog = "SELECT DISTINCT * 
+            $sql_query_blog = "SELECT DISTINCT blog.blog_id, blog.subject, blog.description, blog.tags, blog.date, blog.user_id   
                                 FROM blog 
                                 INNER JOIN comment USING (blog_id) 
                                 INNER JOIN users ON blog.user_id = users.id 
@@ -31,6 +31,11 @@
                                                             WHERE reaction = 'negative' )
                                 GROUP BY blog_id";
             
+        }
+        else if(isset($_GET["followed"])) {
+
+            $current_user = $_SESSION['user_id'];
+            $sql_query_blog = "SELECT * FROM blog JOIN follows USING(user_id) where follows.follower_id = $current_user";
         }
         else {
             $sql_query_blog = "SELECT blog_id, subject, description, tags, date, user_id FROM blog";
@@ -165,32 +170,45 @@
 
     function filterBlogs($db) {
         ?>
-        <p class="blog-filter">Display blogs with only positive comments, published by user:<br>
-            <select  name='menu' id='select-reaction' onchange='this.form.submit()'>;
-                <option value="None">
-                    <?php if(isset($_GET["menu"])){ echo $_GET["menu"];} else { echo "Select User"; } ?>
-                </option>
-                <?php
-                    $sql_users = "SELECT * FROM users";
-                    $result_users = mysqli_query($db, $sql_users);
-                    while($row_user = $result_users->fetch_assoc()) {
-                        if(isset($_GET["menu"])) {
-                            if($_GET["menu"] != $row_user["username"]) {
+        <form>
+            <p class="blog-filter">Display blogs with only positive comments, published by user:<br>
+                <select  name='menu' id='select-reaction' onchange='this.form.submit()'>;
+                    <option value="None">
+                        <?php if(isset($_GET["menu"])){ echo $_GET["menu"];} else { echo "Select User"; } ?>
+                    </option>
+                    <?php
+                        $sql_users = "SELECT * FROM users";
+                        $result_users = mysqli_query($db, $sql_users);
+                        while($row_user = $result_users->fetch_assoc()) {
+                            if(isset($_GET["menu"])) {
+                                if($_GET["menu"] != $row_user["username"]) {
+                                    echo "<option  value='".$row_user["username"]."'>".$row_user["username"]."</option>";
+                                }
+                            } else {
                                 echo "<option  value='".$row_user["username"]."'>".$row_user["username"]."</option>";
                             }
-                        } else {
-                            echo "<option  value='".$row_user["username"]."'>".$row_user["username"]."</option>";
                         }
-                    }
-                    if(isset($_GET["menu"]) && ($_GET["menu"] != " - None - ")){
-                        echo "<option value=' - None - '> - None - </option>";
-                    }
-                ?>
-            </select>
-        </p>
+                        if(isset($_GET["menu"]) && ($_GET["menu"] != " - None - ")){
+                            echo "<option value=' - None - '> - None - </option>";
+                        }
+                    ?>
+                </select>
+            </p>
+        </form>
+            
         <?php
     } 
 
+    function filterSubcriptions($db) {
+        ?>
+            <form>
+                <p class="blog-filter-2"><br>
+                    <input class="form-input-followed" type="submit" name="followed" value="Show Subscriptions" onclick='this.form.submit()' />
+                    <br></br><a class='hello' name='reset' href='home.php'>Reset</a>
+                </p>
+            </form>
+        <?php
+    }
 
     function initializeDatabase($flag) {
 
@@ -340,9 +358,10 @@
         <hr>
         <br>
         <div style="float:right;margin-right:30px;">
-                <form>
-                    <?php filterBlogs($db); ?>
-                </form>
+                <?php filterBlogs($db); ?>
+        </div>
+        <div style="float:right;margin-right:30px;margin-top:200px;">
+            <?php filterSubcriptions($db); ?>
         </div>
 
         <div id = "post-section">

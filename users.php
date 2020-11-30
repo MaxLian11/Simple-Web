@@ -366,7 +366,7 @@ function usersHeader($str) {
 
         <div class ="column-filter">
             <?php
-                echo "<a class='hello' name='create-post' href='users.php'>Reset</a>";
+                echo "<a class='hello' name='reset' href='users.php'>Reset</a>";
             ?>
         </div>
     </div> <!-- end row div -->
