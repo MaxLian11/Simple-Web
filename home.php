@@ -15,6 +15,7 @@
         // get sql query for blog
         mysqli_select_db($db, 'registration');
 
+        // TASK 1. List all the blogs of user X, such that all the comments are positive for these blogs.
         if(isset($_GET["menu"]) && !($_GET["menu"] == " - None - ")) { 
             echo"hey1";
             // store selected username in a variable
@@ -32,11 +33,15 @@
                                 GROUP BY blog_id";
             
         }
+
+        // Display only blogs by users that are followed by a current user
         else if(isset($_GET["followed"])) {
 
             $current_user = $_SESSION['user_id'];
             $sql_query_blog = "SELECT * FROM blog JOIN follows USING(user_id) where follows.follower_id = $current_user";
         }
+
+        // List all blogs
         else {
             $sql_query_blog = "SELECT blog_id, subject, description, tags, date, user_id FROM blog";
         }

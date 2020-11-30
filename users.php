@@ -44,6 +44,7 @@ function insert($flag) {
 
 function listUsers($db) {
 
+    // TASK 2. List the users who posted the most number of blogs on 10/10/2020; if there is a tie, list all the users who have a tie. 
     if(isset($_GET["date-input"])){
 
         $selected_date = $_GET["date-input"];
@@ -77,6 +78,8 @@ function listUsers($db) {
         
     
     }
+
+    // TASK 3. List the users who are followed by both X and Y. Usernames X and Y are inputs from the user.
     else if (isset($_GET["submit-users"]) && ($_GET["user-1"] != "none") && ($_GET["user-2"] != "none")) {
         
         $selected_user_1 = $_GET["user-1"];
@@ -114,6 +117,8 @@ function listUsers($db) {
             echo "</div>";
         }
     }
+
+    // TASK 4. Display all the users who never posted a blog.
     else if (isset($_GET["non-active"])) {
 
         $sql_users = "SELECT * FROM users WHERE id NOT IN( SELECT user_id FROM blog );";
@@ -134,6 +139,8 @@ function listUsers($db) {
             echo "</div>";
         }
     }
+
+    // TASK 5. Display all the users who posted some comments, but each of them is negative.
     else if (isset($_GET["haters"])) {
 
         $sql_users = "SELECT id AS user_id, users.* 
@@ -162,13 +169,15 @@ function listUsers($db) {
             echo "</div>";
         }
     }
+
+    //  TASK 6. Display those users such that all the blogs they posted so far never received any negative comments.
     else if (isset($_GET["respected"])) {
 
         $sql_users = "SELECT DISTINCT(users.id) as user_id, users.* 
                         FROM users INNER JOIN blog ON blog.user_id = users.id 
                         WHERE user_id IN (SELECT blog.user_id 
                                             FROM blog INNER JOIN comment ON comment.blog_id = blog.blog_id 
-                                            WHERE blog.user_id NOT IN (SELECT DISTINCT(comment.user_id) 
+                                            WHERE blog.user_id NOT IN (SELECT DISTINCT(blog.user_id) 
                                                                         FROM comment INNER JOIN blog ON comment.blog_id = blog.blog_id 
                                                                         WHERE reaction = 'Negative'))";
                                                                                                 
@@ -190,6 +199,8 @@ function listUsers($db) {
             echo "</div>";
         }
     }
+    
+    // No filters applied
     else {
         $sql_users = "SELECT * FROM users";
         $result_users = mysqli_query($db, $sql_users);
@@ -294,7 +305,7 @@ function usersHeader($str) {
                     $( "#datepicker" ).datepicker({ dateFormat: 'yy-mm-dd' }).val();
                 } );
             </script>
-            <form id="date-picker">List most active user on this day:  <input type="text" name="date-input" autocomplete="off" id="datepicker" placeholder ="Choose Date" onchange='this.form.submit()'>
+            <form id="date-picker">List the most active user/users on this day:  <input type="text" name="date-input" autocomplete="off" id="datepicker" placeholder ="Choose Date" onchange='this.form.submit()'>
             </form>
         </div>
         <!--  FILTER 1 -->
@@ -339,28 +350,28 @@ function usersHeader($str) {
                     }
                 ?>
             </select> <br>
-            <input class="form-input" type="submit" name="submit-users" onchange='this.form.submit()' /></form>
+            <input class="form-input" type="submit" name="submit-users" value="Show" onchange='this.form.submit()' /></form>
         </div>
         <!--  FILTER 2 -->
 
         <!--  FILTER 3 -->
         <div class = "column-filter"> <!-- filter menu columns -->
             <p>List non active users</p>
-            <form class="submit-fliter"><input class="form-input" type="submit" name="non-active" onchange='this.form.submit()' /></form>
+            <form class="submit-fliter"><input class="form-input" type="submit" name="non-active" value="Show" onchange='this.form.submit()' /></form>
         </div>
         <!--  FILTER 3 -->  
 
         <!--  FILTER 4 -->  
         <div class = "column-filter"> <!-- filter menu columns -->
             <p>List Haters</p>
-            <form class="submit-fliter"><input class="form-input" type="submit" name="haters" onchange='this.form.submit()' /></form>
+            <form class="submit-fliter"><input class="form-input" type="submit" name="haters" value="Show" onchange='this.form.submit()' /></form>
         </div>
         <!--  FILTER 4 --> 
         
         <!--  FILTER 5 -->  
         <div class = "column-filter"> <!-- filter menu columns -->
             <p>List Respected Users</p>
-            <form class="submit-fliter"><input class="form-input" type="submit" name="respected" onchange='this.form.submit()' /></form>
+            <form class="submit-fliter"><input class="form-input" type="submit" name="respected" value="Show" onchange='this.form.submit()' /></form>
         </div>
         <!--  FILTER 5 -->  
 
