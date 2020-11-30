@@ -530,20 +530,12 @@ button {
     background: black;
 }
 
-.section-user-menu {
-    width: 600px;
-    padding-left: 50px;
-    padding-right: 50px;
-    padding-bottom: 20px;
-    background: black;
-}
-
 .filter-menu {
     color: white;
     background-color: #000000;
     text-align: center;
     padding-top: 30px;
-    padding-bottom: 100px;
+    padding-bottom: 150px;
     font-size: 20px;
 }
 
@@ -561,4 +553,38 @@ button {
     font-size:16px;
     color:white;
     text-align: center;
+}
+
+#select-user {
+    border: 1px solid var(--select-border);
+    padding: 0.2em 1.0em;
+    cursor: pointer;
+    width: 200px;
+    font-size: 20px;
+    background-color: #2eec71;
+    background-image: linear-gradient(to top, #2eec71, #2eec71);
+}
+#date-picker input[type="text"] {
+    height: 30px;
+    font-size: large;
+}
+
+.submit-fliter input[type="submit"] {
+    border: 0;
+    background: none;
+    display: block;
+    margin: 10px auto;
+    text-align: center;
+    border: 2px solid #2ecc71;
+    padding: 5px;
+    width: 100px;
+    outline: none;
+    color: white;
+    border-radius: 24px;
+    transition: 0.25s;
+    cursor: pointer;
+}
+
+.submit-fliter input[type="submit"]:hover {
+    background: #2eec71;
 }
