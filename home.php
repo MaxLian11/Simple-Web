@@ -33,7 +33,7 @@
             
         }
 
-        if(isset($_GET["menu"]) && !($_GET["menu"] == " - None - ")) { 
+        else if(isset($_GET["menu"]) && !($_GET["menu"] == " - None - ")) { 
             // store selected username in a variable
             $selected = $_GET["menu"];
 
