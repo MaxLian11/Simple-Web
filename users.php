@@ -128,9 +128,16 @@ function listUsers($db) {
         if ($result_users->num_rows > 0) {
             while($row_user = $result_users->fetch_assoc()) {
 
+                 // get user id to search for number of blogs
+                $user_id = $row_user['id'];
+                $sql_blogs = "SELECT COUNT(*) as blog_count FROM blog WHERE user_id = $user_id";
+                $result_blogs = mysqli_query($db, $sql_blogs);
+                $row_blogs = $result_blogs->fetch_assoc();
+
                 echo "<div class = 'section-user'>";
                 echo    "<br>";
                 echo    "<p style='color:white'>Username: <span class='hello'>" . $row_user['username'] . "</span></p>";
+                echo    "<p style='color:white'>Number of blogs posted: <span class='hello'>" . $row_blogs['blog_count'] . "</span></p>";
                 echo "</div>";
             }
         } else {

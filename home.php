@@ -16,10 +16,9 @@
         mysqli_select_db($db, 'registration');
 
         // TASK 1. List all the blogs of user X, such that all the comments are positive for these blogs.
-        if(isset($_GET["menu"]) && !($_GET["menu"] == " - None - ")) { 
-            echo"hey1";
+        if(isset($_GET["menu-positive-posts"]) && !($_GET["menu-positive-posts"] == " - None - ")) { 
             // store selected username in a variable
-            $selected = $_GET["menu"];
+            $selected = $_GET["menu-positive-posts"];
 
             // query to find all blogs of the selected users which only have positive reviews
             $sql_query_blog = "SELECT DISTINCT blog.blog_id, blog.subject, blog.description, blog.tags, blog.date, blog.user_id   
@@ -31,6 +30,19 @@
                                                             FROM comment 
                                                             WHERE reaction = 'negative' )
                                 GROUP BY blog_id";
+            
+        }
+
+        if(isset($_GET["menu"]) && !($_GET["menu"] == " - None - ")) { 
+            // store selected username in a variable
+            $selected = $_GET["menu"];
+
+            // query to find all blogs of the selected users which only have positive reviews
+            $sql_query_blog = "SELECT DISTINCT blog.blog_id, blog.subject, blog.description, blog.tags, blog.date, blog.user_id   
+                                    FROM blog
+                                    INNER JOIN users ON blog.user_id = users.id 
+                                    WHERE users.username = '$selected'
+                                    GROUP BY blog_id";
             
         }
 
@@ -83,7 +95,7 @@
                 $blog_id = $row_blog['blog_id'];
                 echo "<h1>" . $row_blog['subject'] . "</h1>";
                 echo "&nbsp<p>" . $row_blog['description'] . "</p>";
-                echo "&nbsp<p2>" . $row_blog['tags'] . "</p2>";
+                echo "&nbsp<p2>Tags:&nbsp " . $row_blog['tags'] . "</p2>";
                 echo "<div align='right'> <b>Date posted: " . $row_blog['date'] . "</b></div>";
                 // BEGIN dev
                 echo "<div align='right'> <b>Author: " . $author_username . "</b><br>" ;
@@ -156,7 +168,7 @@
                 if ($result_comment->num_rows > 0) {
                     while($row_comment = $result_comment->fetch_assoc()) {
                         $row_comment_username = $result_comment_username->fetch_assoc();
-                        echo "<div class = 'commentary'>&nbspDate: " . $row_comment["date"] . "<br>&nbsp;User: " . $row_comment_username["username"] . "<br>&nbsp;Reaction: " .  $row_comment["reaction"] . "<br>&nbsp;&nbsp;&nbsp" . $row_comment["comment"] . "<br>" . "<br> </div>";
+                        echo "<div class = 'commentary'>&nbspDate: " . $row_comment["date"] . "<br>&nbsp;User: " . $row_comment_username["username"] . "<br>&nbsp;Reaction: " .  $row_comment["reaction"] . "<br>&nbsp;&nbsp;&nbsp<p5 style='color:white'>" . $row_comment["comment"] . "<p5><br>" . "<br> </div>";
                     }
                 } else { // display "no comments" if query result os empty
                     echo "No comments yet.<br></br>";
@@ -176,7 +188,7 @@
     function filterBlogs($db) {
         ?>
         <form>
-            <p class="blog-filter">Display blogs with only positive comments, published by user:<br>
+            <p class="blog-filter-3">Display blogs published by user:<br>
                 <select  name='menu' id='select-reaction' onchange='this.form.submit()'>;
                     <option value="None">
                         <?php if(isset($_GET["menu"])){ echo $_GET["menu"];} else { echo "Select User"; } ?>
@@ -194,6 +206,37 @@
                             }
                         }
                         if(isset($_GET["menu"]) && ($_GET["menu"] != " - None - ")){
+                            echo "<option value=' - None - '> - None - </option>";
+                        }
+                    ?>
+                </select>
+            </p>
+        </form>
+            
+        <?php
+    } 
+
+    function filterBlogsPositive($db) {
+        ?>
+        <form>
+            <p class="blog-filter">Display blogs with only positive comments, published by user:<br>
+                <select  name='menu-positive-posts' id='select-reaction' onchange='this.form.submit()'>;
+                    <option value="None">
+                        <?php if(isset($_GET["menu-positive-posts"])){ echo $_GET["menu-positive-posts"];} else { echo "Select User"; } ?>
+                    </option>
+                    <?php
+                        $sql_users = "SELECT * FROM users";
+                        $result_users = mysqli_query($db, $sql_users);
+                        while($row_user = $result_users->fetch_assoc()) {
+                            if(isset($_GET["menu-positive-posts"])) {
+                                if($_GET["menu-positive-posts"] != $row_user["username"]) {
+                                    echo "<option  value='".$row_user["username"]."'>".$row_user["username"]."</option>";
+                                }
+                            } else {
+                                echo "<option  value='".$row_user["username"]."'>".$row_user["username"]."</option>";
+                            }
+                        }
+                        if(isset($_GET["menu-positive-posts"]) && ($_GET["menu-positive-posts"] != " - None - ")){
                             echo "<option value=' - None - '> - None - </option>";
                         }
                     ?>
@@ -363,10 +406,13 @@
         <hr>
         <br>
         <div style="float:right;margin-right:30px;">
-                <?php filterBlogs($db); ?>
+                <?php filterBlogsPositive($db); ?>
         </div>
-        <div style="float:right;margin-right:30px;margin-top:200px;">
+        <div style="float:right;margin-right:30px;margin-top:250px;">
             <?php filterSubcriptions($db); ?>
+        </div>
+        <div style="float:right;margin-right:-255px;margin-top:140px;">
+            <?php filterBlogs($db); ?>
         </div>
 
         <div id = "post-section">

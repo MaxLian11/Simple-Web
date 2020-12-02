@@ -30,17 +30,26 @@ body {
 
 .fail {
     color: white;
-    background-color: #0000008a;
+    background-color: #000000;
     position: absolute;
     left: 37%;
     top: 20%;
     font-size: 20px;
 }
 
+.fail2 {
+    color: white;
+    background-color: #000000;
+    position: absolute;
+    left: 60%;
+    top: 30%;
+    font-size: 20px;
+}
+
 .box {
     /*width: 300px;*/
     width: 320px;
-    height: 500px;
+    height: 650px;
     /*padding: 40px;*/
     padding: 70px 30px;
     position: absolute;
@@ -312,8 +321,7 @@ body {
 }
 
 #content-section p {
-    line-height: 18px;
-    word-spacing: 0.1em;
+    line-height: 25px;
     color: white;
 }
 
@@ -556,6 +564,17 @@ button {
 }
 
 .blog-filter-2 {
+    background:black;
+    width:200px;
+    padding:20px;
+    margin-bottom:-200px;
+    margin-left:15px;
+    font-size:16px;
+    color:white;
+    text-align: center;
+}
+
+.blog-filter-3 {
     background:black;
     width:200px;
     padding:20px;

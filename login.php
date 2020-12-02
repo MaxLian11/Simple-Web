@@ -28,7 +28,7 @@ if(isset($_POST['username'])){
     //$username = $_POST["username"];
     //$password = $_POST["password"];
     //$sql_query = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
-    // Injection example:  123' OR username = 'max' AND '1'='1
+    // Injection example:  123' OR username = 'max' AND '1'='1 
 
     */
 
